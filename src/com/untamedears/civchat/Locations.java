@@ -34,4 +34,5 @@ public class Locations {
 	public List<String> getPlayerListeners(){
 		return playerlisteners;
 	}
+	
 }
