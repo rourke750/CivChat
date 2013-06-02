@@ -16,7 +16,10 @@ public class CivChat extends JavaPlugin implements Listener{
 	public void onEnable(){
 		registerEvents();
 	    initConfig();
-		
+		Commands commands = new Commands();
+		for (String command : getDescription().getCommands().keySet()) {
+		getCommand(command).setExecutor(commands);
+		}
 	}
 	public void onDisable(){
 		
@@ -31,9 +34,9 @@ public class CivChat extends JavaPlugin implements Listener{
 	}
 	
 	public void saveConfig(){
-		this.saveDefaultConfig();
+		this.saveConfig();
 	}
-	public void reloadConfig(){
+	public void ReloadConfig(){
 	    this.reloadConfig();
 	}
 	
