@@ -12,15 +12,13 @@ public class Locations {
 	private List<String> playerlisteners= new ArrayList<String>();
 	
 	public void setPlayerLocation(int X,int Y,int Z){
-		X=x;
-		Y=y;
-		Z=z;
+		x=X;
+		y=Y;
+		z=Z;
 	}
 	public void SetPlayerlistners(List<String> player){
-		for (String name: player){
-			playerlisteners.add(name);
-		}
-		
+		playerlisteners=player;
+			
 	}
 	public int getPlayerXLocation(){
 		return x;
@@ -34,5 +32,6 @@ public class Locations {
 	public List<String> getPlayerListeners(){
 		return playerlisteners;
 	}
+	
 	
 }

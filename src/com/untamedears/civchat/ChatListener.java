@@ -14,17 +14,20 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 
 
-public class Listener {
+public class ChatListener {
 	List<String> listeners= new ArrayList<String>();
 	Locations ln= new Locations();
 	channel ch= new channel();
+	CivChat chat= new CivChat();
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void PlayerChatEvent(AsyncPlayerChatEvent event){
 		String message= event.getMessage();
 		Player player=event.getPlayer();
+		
 		if (ch.getInChannel(player)==true){
-			PrivateMessageHandler(message);
+			chat.PrivateMessageHandler(player, message); // Private Channel chat
 		}
+		
 		int X= player.getLocation().getBlockX();
 		int Y= player.getLocation().getBlockY();
 		int Z= player.getLocation().getBlockZ();
@@ -33,10 +36,7 @@ public class Listener {
 		}
 		ln.setPlayerLocation(X,Y,Z);
 		ln.SetPlayerlistners(listeners);
-		
+		chat.PlayerBroadcast(message);
 	}
-	public void PrivateMessageHandler(String message){
-		Player player2=Bukkit.getPlayerExact(ch.getPlayer2());
-		player2.sendMessage(message);
-	}
+	
 }
