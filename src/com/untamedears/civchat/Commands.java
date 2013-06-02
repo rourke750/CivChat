@@ -13,10 +13,18 @@ import org.bukkit.event.EventHandler;
 public class Commands implements CommandExecutor{
 	channel ch= new channel();
 	CivChat chat= new CivChat();
-	@EventHandler
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
+		
+             Player playerreciever= Bukkit.getPlayerExact(args[0]);
 		if (label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("message")){
-			Player playerreciever= Bukkit.getPlayerExact(args[0]);
+			if (args.length < 1) {
+                sender.sendMessage("Provide a player name");
+                return false;
+        }
+			if (args.length==1){
+				sender.sendMessage("Provide a message");
+			}
+		
 			if (playerreciever.isOnline()==false){
 				sender.sendMessage("Player is offline");
 				return true;
@@ -29,7 +37,7 @@ public class Commands implements CommandExecutor{
 			argsmessage.toString();
 			
 			
-			sender.sendMessage(ChatColor.RED+"To player: "+ argsmessage);
+			sender.sendMessage(ChatColor.RED+"To "+playerreciever.getDisplayName()+": "+ argsmessage);
 			playerreciever.sendMessage(ChatColor.RED+"From "+sender.getName()+": "+ argsmessage);
 			ch.setChannel(sender.getName(), playerreciever.getName(), true);
 			return true;
