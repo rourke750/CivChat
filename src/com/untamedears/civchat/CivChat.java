@@ -29,12 +29,14 @@ public class CivChat extends JavaPlugin implements Listener{
 		double chatrange=500;
 		this.getConfig().set("chatrange",chatrange);
 		if (this.getConfig()==null){
-			this.getConfig().options().copyDefaults(true);
+
+			this.saveConfig();
 		}
+		return;
 	}
 	
 	public void saveConfig(){
-		this.saveConfig();
+		this.getConfig().options().copyDefaults(true);
 	}
 	public void ReloadConfig(){
 	    this.reloadConfig();
@@ -42,6 +44,7 @@ public class CivChat extends JavaPlugin implements Listener{
 	
 	private void registerEvents() {
 	    getServer().getPluginManager().registerEvents(this, this);
+	    return;
 	  }
 	
 	public void PrivateMessageHandler(Player player1, String message){
