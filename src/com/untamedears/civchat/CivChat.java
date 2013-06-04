@@ -11,7 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CivChat extends JavaPlugin implements Listener{
-ChatListener cl= new ChatListener();
+ChatManager chat = new ChatManager();
+ChatListener cl= new ChatListener(chat);
 	public void onEnable(){
 		registerEvents();
 	    initConfig();

@@ -1,17 +1,14 @@
 package com.untamedears.civchat;
 
-import net.minecraft.server.v1_5_R3.CommandHandler;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 
 public class Commands implements CommandExecutor{
-	channel ch= new channel();
+	Channel ch;
 	CivChat chat= new CivChat();
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 		
@@ -22,10 +19,10 @@ public class Commands implements CommandExecutor{
                 sender.sendMessage("Provide a player name");
                 return true;
         }
-			
-		
-			
-			if (args.length>=1){
+			if (args.length==1){
+				
+			}
+			if (args.length>1){
 				Player playerreciever= Bukkit.getPlayerExact(args[0]);
 				
 				if (playerreciever==null){

@@ -1,28 +1,33 @@
 package com.untamedears.civchat;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 
 public class ChatManager {
-	channel ch= new channel();
-	Locations lo= new Locations();
+	private HashMap<Player,Player> channels = new HashMap<Player,Player>();
 	Configuration config_;
 	public void PrivateMessageHandler(Player player1, String message){
 		Player player2=Bukkit.getPlayerExact(ch.getPlayer2());
 		player2.sendMessage(ChatColor.RED+"From "+player1.getName()+": "+message);
 	}
-	public void PlayerBroadcast(String message){
-		
-		int x= lo.getPlayerXLocation();
-		int y= lo.getPlayerYLocation();
-		int z= lo.getPlayerZLocation();
+	public void PlayerBroadcast(Player player, String message, Set<Player> recievers){
+		Location location = player.getLocation();
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
 		double chatrange=0;
-		for (String player: lo.getPlayerListeners()){
-			Player player2 = Bukkit.getPlayerExact(player);
-			double distance = Math.sqrt(((x-player2.getLocation().getBlockX())^2 + (z-player2.getLocation().getBlockZ())^2));
-			double height=y-player2.getLocation().getBlockY();
+		for (Player reciever: recievers){
+			
+			double distance = Math.sqrt(((x-reciever.getLocation().getBlockX())^2 + (z-reciever.getLocation().getBlockZ())^2));
+			double height=y-reciever.getLocation().getBlockY();
 			int extradistance=0;
 			int sign=0;
 			if (height<0){sign=-1;}
@@ -38,9 +43,36 @@ public class ChatManager {
 				chatrange=distance+extradistance;
 				}
 				else if (chatrange<=500){
-			player2.sendMessage(ChatColor.RED+message);
+			reciever.sendMessage(ChatColor.RED+message);
 		}
 	}
 	}
+	 public void addChannel(Player player1, Player player2){
+	 
+	 if (getChannel(player1) != null){
+	 
+	 removeChannel(player1);
+	 channels.put(player1, player2);
+	 }
+	 else{
+	 
+	 channels.put(player1, player2);
+	 	}
+	 }
+	 public Player getChannel(Player player){	 
+		 if (channels.containsKey(player)){	 
+			 return channels.get(player);
+		 }
+		 else{
+			 return null;
+		 }
+	 }
+	 public void removeChannel (Player player){
+	 
+	 if (channels.containsKey(player))
+	 {
+	 channels.remove(player);
+	 }
+	 }
 
 }

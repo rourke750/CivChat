@@ -3,6 +3,7 @@ package com.untamedears.civchat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.tools.JavaFileManager.Location;
 
@@ -16,10 +17,12 @@ import org.bukkit.event.player.PlayerEvent;
 
 
 public class ChatListener implements Listener{
-	List<String> listeners= new ArrayList<String>();
 	Locations ln= new Locations();
-	channel ch= new channel();
-	ChatManager chat= new ChatManager();
+	Channel ch;
+	ChatManager chat;
+	public ChatListener(ChatManager instance){
+		chat=instance;
+	}
 	@EventHandler(priority = EventPriority.HIGH)
 	public void PlayerChatEvent(AsyncPlayerChatEvent event){
 		event.setCancelled(true);
@@ -29,16 +32,7 @@ public class ChatListener implements Listener{
 		if (ch.getInChannel(player)==true){
 			chat.PrivateMessageHandler(player, message); // Private Channel chat
 		}
-		
-		int X= player.getLocation().getBlockX();
-		int Y= player.getLocation().getBlockY();
-		int Z= player.getLocation().getBlockZ();
-		for (Player name: event.getRecipients()){
-			listeners.add(name.getName());
-		}
-		ln.setPlayerLocation(X,Y,Z);
-		ln.SetPlayerlistners(listeners);
-		chat.PlayerBroadcast(message);
+		chat.PlayerBroadcast(player, message, event.getRecipients());
 		
 	}
 	

@@ -2,25 +2,27 @@ package com.untamedears.civchat;
 
 import org.bukkit.entity.Player;
 
-public class channel {
-	private Boolean inchannel;
-	private String player1;
-	private String player2;
+public class Channel {
+	private Player player1;
+	private Player player2;
 	
-	public void setChannel(String one, String two, Boolean channel){
-		player1= one;
-		player2= two;
-		inchannel=channel;
+	public Channel (Player instance1, Player instance2)
+	{
+	player1 = instance1;
+	player2 = instance2;
 	}
-	public Boolean getInChannel(Player player){
-		if(player.getName()==player1){
-			return inchannel;
-		}
-		else{
-		return false;
+	public Player getReciever(Player sender)
+	{
+	if (player1 == sender)
+	{
+	return player2;
 	}
+	else if (player2 == sender)
+	{
+	return player1;
 	}
-	public String getPlayer2(){
-		return player2;
+	return null;
 	}
+	
+
 }
