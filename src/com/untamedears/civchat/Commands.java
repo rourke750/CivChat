@@ -8,8 +8,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Commands implements CommandExecutor{
-	Channel ch;
-	CivChat chat= new CivChat();
+	
+	ChatManager chatManager;
+	public Commands (ChatManager chatManagerInstance){
+	chatManager = chatManagerInstance;
+	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
 		
              
@@ -36,9 +39,8 @@ public class Commands implements CommandExecutor{
 					argsmessage.append(" ");
 				}
 				argsmessage.toString();
-			sender.sendMessage(ChatColor.RED+"To "+playerreciever.getDisplayName()+": "+ argsmessage);
-			playerreciever.sendMessage(ChatColor.RED+"From "+sender.getName()+": "+ argsmessage);
-			ch.setChannel(sender.getName(), playerreciever.getName(), true);
+				chatManager.PrivateMessageHandler(sender.getName(), playerreciever, argsmessage);
+			
 			return true;
 				}
 			}
