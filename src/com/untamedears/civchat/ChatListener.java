@@ -10,15 +10,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerEvent;
 
 
-public class ChatListener {
+public class ChatListener implements Listener{
 	List<String> listeners= new ArrayList<String>();
 	Locations ln= new Locations();
 	channel ch= new channel();
-	CivChat chat= new CivChat();
+	ChatManager chat= new ChatManager();
 	@EventHandler(priority = EventPriority.HIGH)
 	public void PlayerChatEvent(AsyncPlayerChatEvent event){
 		event.setCancelled(true);
@@ -38,6 +39,7 @@ public class ChatListener {
 		ln.setPlayerLocation(X,Y,Z);
 		ln.SetPlayerlistners(listeners);
 		chat.PlayerBroadcast(message);
+		
 	}
 	
 }
