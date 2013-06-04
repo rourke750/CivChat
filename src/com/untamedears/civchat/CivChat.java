@@ -13,6 +13,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CivChat extends JavaPlugin implements Listener{
 	channel ch= new channel();
 	Locations lo= new Locations();
+	ChatListener cl= new ChatListener();
 	public void onEnable(){
 		registerEvents();
 	    initConfig();
@@ -43,7 +44,7 @@ public class CivChat extends JavaPlugin implements Listener{
 	}
 	
 	private void registerEvents() {
-	    getServer().getPluginManager().registerEvents(this, this);
+	    getServer().getPluginManager().registerEvents(cl, this);
 	    return;
 	  }
 	
@@ -75,8 +76,8 @@ public class CivChat extends JavaPlugin implements Listener{
 				if (sign==+1){
 				chatrange=distance+extradistance;
 				}
-				if (chatrange<=this.getConfig().getDouble("chatrange",chatrange)){
-			player2.sendMessage(message);
+				else if (chatrange<=this.getConfig().getDouble("chatrange",chatrange)){
+			player2.sendMessage(ChatColor.RED+message);
 		}
 	}
 	}

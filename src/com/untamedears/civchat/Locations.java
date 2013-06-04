@@ -15,10 +15,11 @@ public class Locations {
 		x=X;
 		y=Y;
 		z=Z;
+		return;
 	}
 	public void SetPlayerlistners(List<String> player){
 		playerlisteners=player;
-			
+			return;
 	}
 	public int getPlayerXLocation(){
 		return x;

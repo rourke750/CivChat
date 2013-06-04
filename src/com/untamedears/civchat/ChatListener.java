@@ -19,8 +19,9 @@ public class ChatListener {
 	Locations ln= new Locations();
 	channel ch= new channel();
 	CivChat chat= new CivChat();
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void PlayerChatEvent(AsyncPlayerChatEvent event){
+		event.setCancelled(true);
 		String message= event.getMessage();
 		Player player=event.getPlayer();
 		
