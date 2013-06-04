@@ -17,8 +17,7 @@ import org.bukkit.event.player.PlayerEvent;
 
 
 public class ChatListener implements Listener{
-	Locations ln= new Locations();
-	Channel ch;
+	
 	ChatManager chat;
 	public ChatListener(ChatManager instance){
 		chat=instance;
@@ -29,10 +28,13 @@ public class ChatListener implements Listener{
 		String message= event.getMessage();
 		Player player=event.getPlayer();
 		
-		if (ch.getInChannel(player)==true){
-			chat.PrivateMessageHandler(player, message); // Private Channel chat
+		if (chat.getChannel(player)!=null){
+			chat.PrivateMessageHandler(player, chat.getChannel(player), message);
+			return;
 		}
-		chat.PlayerBroadcast(player, message, event.getRecipients());
+		else{
+			chat.PlayerBroadcast(player, message, event.getRecipients());
+		}
 		
 	}
 	

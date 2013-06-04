@@ -16,7 +16,7 @@ ChatListener cl= new ChatListener(chat);
 	public void onEnable(){
 		registerEvents();
 	    initConfig();
-		Commands commands = new Commands();
+		Commands commands=new Commands(chat);;
 		for (String command : getDescription().getCommands().keySet()) {
 		getCommand(command).setExecutor(commands);
 		}

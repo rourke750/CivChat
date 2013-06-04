@@ -14,10 +14,9 @@ import org.bukkit.entity.Player;
 public class ChatManager {
 	private HashMap<Player,Player> channels = new HashMap<Player,Player>();
 	Configuration config_;
-	public void PrivateMessageHandler(String player1,Player player2, StringBuilder argsmessage){
-		Player sender=Bukkit.getPlayerExact(player1);
-		sender.sendMessage(ChatColor.RED+"To "+player2.getDisplayName()+": "+ argsmessage);
-		player2.sendMessage(ChatColor.RED+"From "+sender.getName()+": "+ argsmessage);
+	public void PrivateMessageHandler(Player player1,Player player2, String argsmessage){
+		player1.sendMessage(ChatColor.RED+"To "+player2.getDisplayName()+": "+ argsmessage);
+		player2.sendMessage(ChatColor.RED+"From "+player1.getName()+": "+ argsmessage);
 	}
 	public void PlayerBroadcast(Player player, String message, Set<Player> recievers){
 		Location location = player.getLocation();

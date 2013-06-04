@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Commands implements CommandExecutor{
-	
+	CivChat civ;
 	ChatManager chatManager;
 	public Commands (ChatManager chatManagerInstance){
 	chatManager = chatManagerInstance;
@@ -17,14 +17,35 @@ public class Commands implements CommandExecutor{
 		
              
 		if (label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("message")){
+			if (!(sender instanceof Player))
+			{
+			sender.sendMessage("You have to be a player to use that command!");
+			}
+			Player player = (Player) sender;
 			
 			if (args.length < 1) {
-                sender.sendMessage("Provide a player name");
+				if (chatManager.getChannel(player)==null){
+					player.sendMessage("Provide a player name");
+				}
+				else{
+				chatManager.removeChannel(player);
+					player.sendMessage("In Global Channel");
+				}
                 return true;
         }
-			if (args.length==1){
-				
+			else if(args.length == 1){
+				Player playerreciever= Bukkit.getPlayerExact(args[0]);
+				if (playerreciever==null){
+					player.sendMessage("Player is offline");
+					return true;
 			}
+				else{
+					chatManager.addChannel(player, playerreciever);
+					player.sendMessage("In Channel with "+ playerreciever.getDisplayName());
+					return true;
+					}
+			}
+			
 			if (args.length>1){
 				Player playerreciever= Bukkit.getPlayerExact(args[0]);
 				
@@ -38,8 +59,9 @@ public class Commands implements CommandExecutor{
 					argsmessage.append(args[i]);
 					argsmessage.append(" ");
 				}
-				argsmessage.toString();
-				chatManager.PrivateMessageHandler(sender.getName(), playerreciever, argsmessage);
+				
+				
+				chatManager.PrivateMessageHandler(player, playerreciever, argsmessage.toString());
 			
 			return true;
 				}
@@ -49,12 +71,12 @@ public class Commands implements CommandExecutor{
 		if (label.equalsIgnoreCase("civchat")){
 			if (args[0]=="save"){
 				sender.sendMessage("saved config");
-				chat.saveConfig();
+				civ.saveConfig();
 				return true;
 			}
 			if (args[0]=="reload"){
 				sender.sendMessage("reloaded config");
-				chat.ReloadConfig();
+				civ.ReloadConfig();
 				return true;
 			}
 			else{ sender.sendMessage("Incorrect arg");}
