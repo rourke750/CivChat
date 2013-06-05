@@ -18,6 +18,7 @@ FileConfiguration config_= getConfig();
 	public void onEnable(){
 		registerEvents();
 		this.saveDefaultConfig();
+		chat = new ChatManager(getConfig());
 	    initConfig();
 		Commands commands=new Commands(chat);;
 		for (String command : getDescription().getCommands().keySet()) {
