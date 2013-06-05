@@ -26,25 +26,30 @@ public class ChatManager {
 		double chatrange=0;
 		for (Player reciever: recievers){
 			
-			double distance = Math.sqrt(((x-reciever.getLocation().getBlockX())^2 + (z-reciever.getLocation().getBlockZ())^2));
-			double height=y-reciever.getLocation().getBlockY();
+			Long distance = Math.round(Math.sqrt(((x-reciever.getLocation().getBlockX())^2 + (z-reciever.getLocation().getBlockZ())^2)));
+			int height=y-reciever.getLocation().getBlockY();
 			int extradistance=0;
 			int sign=0;
 			if (height<0){sign=-1;}
-			if (height>0){sign=+1;}
+			if (height>0){sign=1;}
 			
 				for (int i=0; i<=Math.abs(height);i++){ 
-					extradistance +=50;
+					extradistance +=4;
 				}
 				if (sign==-1){
-				chatrange= distance-extradistance;
+				chatrange= distance+extradistance;
 			}
-				if (sign==+1){
-				chatrange=distance+extradistance;
+				if (sign==1){
+				chatrange=distance-extradistance;
 				}
-				else if (chatrange<=500){
-			reciever.sendMessage(ChatColor.RED+message);
+				if (reciever==player || recievers.size()<1){
+					player.sendMessage("No one can hear you");
+					continue;
+				}
+				if (chatrange<=1000){
+			reciever.sendMessage(ChatColor.RED+player.getDisplayName()+": "+message+chatrange);
 		}
+				
 	}
 	}
 	 public void addChannel(Player player1, Player player2){
