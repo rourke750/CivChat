@@ -69,12 +69,12 @@ public class Commands implements CommandExecutor{
 			return true;
 		}
 		if (label.equalsIgnoreCase("civchat")){
-			if (args[0]=="save"){
+			if (args[0].equals("save")){
 				sender.sendMessage("saved config");
 				civ.saveConfig();
 				return true;
 			}
-			if (args[0]=="reload"){
+			if (args[0].equals("reload")){
 				sender.sendMessage("reloaded config");
 				civ.ReloadConfig();
 				return true;
