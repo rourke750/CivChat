@@ -12,9 +12,11 @@ public class ChatManager {
 	private FileConfiguration config;
 	private int chatmax = 1000;
 	private HashMap<String, String> channels = new HashMap<String, String>();
+    private CivChat plugin = null;
 
-	public ChatManager (FileConfiguration configInstance) {
-		config = configInstance;
+	public ChatManager (CivChat pluginInstance) {
+        plugin = pluginInstance;
+		config = plugin.getConfig();
 		config.getInt("chat.range", 1000);
 	}
 
