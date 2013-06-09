@@ -9,15 +9,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class ChatManager {
+	private CivChat plugin = null;
 	private FileConfiguration config;
-	private int chatmax = 1000;
+	private int chatmax;
+	private int chatheight;
 	private HashMap<String, String> channels = new HashMap<String, String>();
-    private CivChat plugin = null;
+    
 
 	public ChatManager (CivChat pluginInstance) {
         plugin = pluginInstance;
 		config = plugin.getConfig();
-		config.getInt("chat.range", 1000);
+		chatmax=config.getInt("chat.range", 1000);
+		chatheight=config.getInt("chat.height", 2);
 	}
 
 	public void sendPrivateMessage(Player from, Player to, String message) {
@@ -52,7 +55,7 @@ public class ChatManager {
 				sign = 1;
 
 			for (int i = 0; i <= Math.abs(height); i++) { 
-				extradistance += 4;
+				extradistance += chatheight;
 			}
 			
 			if (sign == -1) {

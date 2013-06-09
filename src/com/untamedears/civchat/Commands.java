@@ -11,14 +11,16 @@ public class Commands implements CommandExecutor {
 	private CivChat civ;
 	private ChatManager chatManager;
 	
-	public Commands (ChatManager chatManagerInstance) {
+	public Commands (ChatManager chatManagerInstance, CivChat instance) {
 		chatManager = chatManagerInstance;
+		civ=instance;
 	}
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (command.getName().equals("tell")) {
+		if (label.equalsIgnoreCase("tell")) {
 			if (!(sender instanceof Player))
 			{
 				sender.sendMessage("You have to be a player to use that command!");
+				return true;
 			}
 			
 			Player player = (Player) sender;
@@ -78,32 +80,31 @@ public class Commands implements CommandExecutor {
 			return true;
 		}
 		
-		if (command.getName().equals("civchat")) {
-			if(!sender.hasPermission("civchat.admin")) {
-				sender.sendMessage(ChatColor.RED + "You do not have permission to do this.");
+		if (label.equals("civchat")) {
+			if (args.length<1){
+				sender.sendMessage("Usage: /civchat <save/reload>");
 				return true;
-			}
+				}
 			
-			if (args[0].equals("save")) {
-				sender.sendMessage(ChatColor.GREEN + "Saved configuration.");
+			if (args[0].equalsIgnoreCase("save")) {
+				sender.sendMessage("Saved configuration.");
 				civ.saveConfig();
 				
 				return true;
 			}
 			if (args[0].equals("reload")) {
-				sender.sendMessage(ChatColor.GREEN + "Reloaded configuration.");
+				sender.sendMessage("Reloaded configuration.");
 				civ.reloadConfig();
 				
 				return true;
 			}
 			
-			sender.sendMessage(ChatColor.RED + "Usage: /civchat <save/reload>");
-			
 			return true;
 		}
 		
-		return true;
-	}
+	  return true;
+   }
+
 
 }
 

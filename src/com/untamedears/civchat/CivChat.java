@@ -5,6 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class CivChat extends JavaPlugin implements Listener {
+	
 	private ChatManager chat = null;
 	private ChatListener cl = null;
 	private FileConfiguration config = null;
@@ -16,16 +17,23 @@ public class CivChat extends JavaPlugin implements Listener {
 	    chat = new ChatManager(this);
 	    cl = new ChatListener(chat);
 		registerEvents();
-		Commands commands=new Commands(chat);
+		Commands commands=new Commands(chat, this);
 		
 		for (String command : getDescription().getCommands().keySet()) {
+			
+			
 			getCommand(command).setExecutor(commands);
+			
 		}
 	}
 	
 	public void initConfig() {
-		if(!config.contains("chat.range"))
+		if(!config.contains("chat.range")){
 			config.set("chat.range", 1000);
+		}
+		if(!config.contains("chat.height")){
+			config.set("chat.height", 2);
+		}
 	}
 
 	private void registerEvents() {
