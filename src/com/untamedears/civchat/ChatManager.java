@@ -1,7 +1,7 @@
 package com.untamedears.civchat;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -11,6 +11,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
+import com.untamedears.citadel.Citadel;
+import com.untamedears.citadel.entity.Faction;
 
 /*
  * Coded by ibbignerd
@@ -43,7 +46,6 @@ public class ChatManager {
     private int whisperDist;
     private String whisperColor;
     private HashMap<String, String> channels = new HashMap<>();
-    private List<String> other= new LinkedList<>();
     private String replacement = "abcdefghijklmnopqrstuvwxyz";
 
     public ChatManager(CivChat pluginInstance) {
@@ -167,23 +169,17 @@ public class ChatManager {
     }
 
     public void addChannel(String player1, String player2) {
-        /*if (getChannel(player1) != null) {
+        if (getChannel(player1) != null) {
             removeChannel(player1);
             channels.put(player1, player2);
-        } else {*/
+        } else {
             channels.put(player1, player2);
-        //}
+        }
     }
 
-    public List<String> getChannel(String player) {
+    public String getChannel(String player) {
         if (channels.containsKey(player)) {
-        	for (String player1:channels.values()){
-        		if (player1==player){
-        			
-        			other.add(channels.get(player1));
-        		}
-        	}
-            return other;
+            return channels.get(player);
         } else {
             return null;
         }
@@ -193,5 +189,12 @@ public class ChatManager {
         if (channels.containsKey(player)) {
             channels.remove(player);
         }
+    }
+    public void GroupChat(Faction group, StringBuilder message){
+    	Collection<Player> players=Citadel.getMemberManager().getOnlinePlayers();
+    	String chat=message.toString();
+    	for (Player reciever: players){
+    		reciever.sendMessage(chat);
+    	}
     }
 }

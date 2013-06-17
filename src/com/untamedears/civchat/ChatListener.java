@@ -1,7 +1,5 @@
 package com.untamedears.civchat;
 
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -31,10 +29,10 @@ public class ChatListener implements Listener {
 
         String message = event.getMessage();
         Player player = event.getPlayer();
-        List<String> channel = chat.getChannel(player.getName());
-        for (String player2: channel){
-        if (player2 != null) {
-            Player to = Bukkit.getPlayerExact(player2);
+        String channel = chat.getChannel(player.getName());
+
+        if (channel != null) {
+            Player to = Bukkit.getPlayerExact(channel);
 
             if (to != null) {
                 chat.sendPrivateMessage(player, to, message);
@@ -43,7 +41,6 @@ public class ChatListener implements Listener {
                 chat.removeChannel(player.getName());
                 player.sendMessage(ChatColor.GOLD + "The player you were chatting with has gone offline. You are now in regular chat.");
             }
-        }
         }
         chat.sendPlayerBroadcast(player, message, event.getRecipients());
     }

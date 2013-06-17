@@ -7,6 +7,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.untamedears.citadel.Citadel;
+import com.untamedears.citadel.entity.Faction;
+
 /*
  * Coded by Rourke750 & ibbignerd
  */
@@ -107,6 +110,32 @@ public class Commands implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED + "You Do not have Permissions civchat.admin");
             }
+        }
+        if (label.equalsIgnoreCase("groupchat")){
+        	StringBuilder message = new StringBuilder();
+        	Faction group=Citadel.getGroupManager().getGroup(args[0]);
+        	if (group==null){
+        		sender.sendMessage("Not a valid group name");
+        		return true;
+        	}
+        	else if (!Citadel.getGroupManager().getGroup(group.getName()).isMember(sender.getName())
+        			|| !Citadel.getGroupManager().getGroup(group.getName()).isModerator(sender.getName())
+        			|| !Citadel.getGroupManager().getGroup(group.getName()).isFounder(sender.getName())){
+        		sender.sendMessage("You are not in that group.");
+        		return true;
+        	}
+        	
+        	else{
+            for (int i = 1; i < args.length; i++) {
+                message.append(args[i]);
+
+                if (i < args.length - 1) {
+                    message.append(" ");
+                }
+            }
+            chatManager.GroupChat(group, message);
+            return true;
+        }
         }
         return true;
     }
