@@ -1,6 +1,8 @@
 package com.untamedears.civchat;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
@@ -41,6 +43,7 @@ public class ChatManager {
     private int whisperDist;
     private String whisperColor;
     private HashMap<String, String> channels = new HashMap<>();
+    private List<String> other= new LinkedList<>();
     private String replacement = "abcdefghijklmnopqrstuvwxyz";
 
     public ChatManager(CivChat pluginInstance) {
@@ -164,17 +167,23 @@ public class ChatManager {
     }
 
     public void addChannel(String player1, String player2) {
-        if (getChannel(player1) != null) {
+        /*if (getChannel(player1) != null) {
             removeChannel(player1);
             channels.put(player1, player2);
-        } else {
+        } else {*/
             channels.put(player1, player2);
-        }
+        //}
     }
 
-    public String getChannel(String player) {
+    public List<String> getChannel(String player) {
         if (channels.containsKey(player)) {
-            return channels.get(player);
+        	for (String player1:channels.values()){
+        		if (player1==player){
+        			
+        			other.add(channels.get(player1));
+        		}
+        	}
+            return other;
         } else {
             return null;
         }
