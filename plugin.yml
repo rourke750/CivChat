@@ -2,7 +2,8 @@ name: CivChat
 
 main: com.untamedears.civchat.CivChat
 
-version: .6
+version: .81
+
 author: Rourke750, ibbignerd
 
 commands:

@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -45,6 +46,7 @@ public class ChatManager {
     private String whisperChar;
     private int whisperDist;
     private String whisperColor;
+    private HashMap<String, Faction> groupchat= new HashMap<>();
     private HashMap<String, String> channels = new HashMap<>();
     private String replacement = "abcdefghijklmnopqrstuvwxyz";
 
@@ -190,11 +192,55 @@ public class ChatManager {
             channels.remove(player);
         }
     }
-    public void GroupChat(Faction group, StringBuilder message){
+    public void GroupChat(Faction group, StringBuilder message, String player){
+    	Player player1= Bukkit.getPlayer(player);
     	Collection<Player> players=Citadel.getMemberManager().getOnlinePlayers();
     	String chat=message.toString();
     	for (Player reciever: players){
-    		reciever.sendMessage(chat);
+    		if (group.isMember(reciever.getName())
+    			&& group.isFounder(reciever.getName())
+    			&& group.isModerator(reciever.getName())){
+    			continue;
+    		}
+    		player1.sendMessage("To group"+group+": "+chat);
+    		reciever.sendMessage("Group "+group+", from "+player+": "+chat);
     	}
+    	
+    }
+    public void PrivateGroupChat(Faction group, String message, String player){
+    	Player player1= Bukkit.getPlayer(player);
+    	Collection<Player> players=Citadel.getMemberManager().getOnlinePlayers();
+    	String chat=message.toString();
+    	for (Player reciever: players){
+    		if (group.isMember(reciever.getName())
+    			&& group.isFounder(reciever.getName())
+    			&& group.isModerator(reciever.getName())){
+    			continue;
+    		}
+    		player1.sendMessage("To group"+group+": "+chat);
+    		reciever.sendMessage("Group "+group+", from "+player+": "+chat);
+    	}
+    }
+    public void addGroupTalk(String player, Faction group){
+    	if (getGroupTalk(player) != null) {
+            removeGroupTalk(player);
+            groupchat.put(player, group);
+        } else {
+            groupchat.put(player, group);
+        }
+    	
+    }
+    public Faction getGroupTalk(String player){
+    	 if (groupchat.containsKey(player)) {
+             return groupchat.get(player);
+         } else {
+             return null;
+         }
+    	
+    }
+    public void removeGroupTalk(String player){
+    	if (groupchat.containsKey(player)) {
+            groupchat.remove(player);
+        }
     }
 }

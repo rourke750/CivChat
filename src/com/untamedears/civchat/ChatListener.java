@@ -8,6 +8,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import com.untamedears.citadel.entity.Faction;
+
 /*
  * Coded by Rourke750
  */
@@ -20,7 +22,7 @@ public class ChatListener implements Listener {
         chat = instance;
     }
     /*
-     * TODO: Remove Death messages
+     * TODO: Remove Death messages 
      * TODO: Remove logging messages
      */
     @EventHandler(priority = EventPriority.HIGH)
@@ -30,17 +32,23 @@ public class ChatListener implements Listener {
         String message = event.getMessage();
         Player player = event.getPlayer();
         String channel = chat.getChannel(player.getName());
+        Faction group = chat.getGroupTalk(player.getName());
 
         if (channel != null) {
             Player to = Bukkit.getPlayerExact(channel);
-
+            
             if (to != null) {
                 chat.sendPrivateMessage(player, to, message);
                 return;
-            } else {
+            } 
+            else {
                 chat.removeChannel(player.getName());
                 player.sendMessage(ChatColor.GOLD + "The player you were chatting with has gone offline. You are now in regular chat.");
             }
+        }
+        if(group!=null){
+        	chat.PrivateGroupChat(group, message, player.getName());
+        	return;
         }
         chat.sendPlayerBroadcast(player, message, event.getRecipients());
     }
