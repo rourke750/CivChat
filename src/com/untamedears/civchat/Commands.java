@@ -35,10 +35,10 @@ public class Commands implements CommandExecutor {
 
             if (args.length < 1) {
                 if (chatManager.getChannel(player.getName()) == null) {
-                    player.sendMessage(ChatColor.RED + "Usage: /tell <player>");
+                    player.sendMessage(ChatColor.RED+"Usage: /tell <player>");
                 } else {
                     chatManager.removeChannel(player.getName());
-                    player.sendMessage(ChatColor.YELLOW + "You have moved to regular chat.");
+                    player.sendMessage(ChatColor.RED+"You have moved to regular chat.");
                 }
                 return true;
             } else if (args.length == 1) {
@@ -47,12 +47,12 @@ public class Commands implements CommandExecutor {
                     player.sendMessage(ChatColor.RED + "Error: Player is offline.");
                     return true;
                 } else {
-                	if (chatManager.getGroupTalk(player.getName())!=null){
-                		sender.sendMessage("You were removed from Group Chat.");
+                    if (chatManager.getGroupTalk(player.getName())!=null){
+                		sender.sendMessage(ChatColor.RED+"You were removed from Group Chat.");
                 		chatManager.removeGroupTalk(player.getName());
                 	}
                     chatManager.addChannel(player.getName(), receiver.getName());
-                    player.sendMessage(ChatColor.YELLOW + "You are now chatting with " + receiver.getDisplayName() + ".");
+                    player.sendMessage(ChatColor.RED+ "You are now chatting with " + receiver.getDisplayName() + ".");
                     return true;
                 }
             }
@@ -88,7 +88,7 @@ public class Commands implements CommandExecutor {
 
             Player player = (Player) sender;
             chatManager.removeChannel(player.getName());
-            player.sendMessage(ChatColor.YELLOW + "You have moved to regular chat.");
+            player.sendMessage(ChatColor.RED+"You have moved to regular chat.");
             return true;
         }
 
@@ -121,29 +121,34 @@ public class Commands implements CommandExecutor {
         	StringBuilder message = new StringBuilder();
         	Faction group=Citadel.getGroupManager().getGroup(args[0]);
         	if (group==null){
-        		sender.sendMessage("Not a valid group name");
+        		sender.sendMessage(ChatColor.RED+"Not a valid group name");
         		return true;
         	}
         	if (!Citadel.getGroupManager().getGroup(group.getName()).isMember(sender.getName())
         			&& !Citadel.getGroupManager().getGroup(group.getName()).isModerator(sender.getName())
         			&& !Citadel.getGroupManager().getGroup(group.getName()).isFounder(sender.getName())){
-        		sender.sendMessage("You are not in that group.");
+        		sender.sendMessage(ChatColor.RED+"You are not in that group.");
         		return true;
         	}
-        	
+        	if (args.length<1){
+        		sender.sendMessage(ChatColor.RED+"You have been moved to normal chat.");
+    			chatManager.removeGroupTalk(player.getName());
+    			return true;
+        	}
         	if (args.length==1){
         		if (chatManager.getGroupTalk(player.getName())==null){
-        			if (chatManager.getChannel(player.getName()) == null){
-        				sender.sendMessage("You were removed from private chat.");
+        			if (chatManager.getChannel(player.getName()) != null){
+        				sender.sendMessage(ChatColor.RED+"You were removed from private chat.");
         				chatManager.removeChannel(player.getName());
         			}
-        			sender.sendMessage("You have moved to group chat in the group: "+group+".");
+        			sender.sendMessage(ChatColor.RED+"You have moved to group chat in the group: "+group+".");
             		chatManager.addGroupTalk(sender.getName(),group);
             		return true;
         		}
         		else {
-        			sender.sendMessage("You have been moved to normal chat.");
+        			sender.sendMessage(ChatColor.RED+"You have been switched to group: "+group);
         			chatManager.removeGroupTalk(player.getName());
+        			chatManager.addGroupTalk(player.getName(), group);
         			return true;
         		}
         	}
