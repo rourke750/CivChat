@@ -87,9 +87,20 @@ public class Commands implements CommandExecutor {
             }
 
             Player player = (Player) sender;
+            if (chatManager.getChannel(player.getName())!=null){
             chatManager.removeChannel(player.getName());
-            player.sendMessage(ChatColor.RED+"You have moved to regular chat.");
+            player.sendMessage(ChatColor.RED+"You have been moved to regular chat.");
             return true;
+            }
+            if (chatManager.getGroupTalk(player.getName())!=null){
+            	chatManager.removeGroupTalk(player.getName());
+            	player.sendMessage(ChatColor.RED+"You have been moved to regular chat.");
+            	return true;
+            }
+            else{
+            	player.sendMessage(ChatColor.RED+"You are not in a private chat or group chat");
+            	return true;
+            }
         }
 
         if (label.equalsIgnoreCase("civchat")) {
