@@ -2,7 +2,7 @@ name: CivChat
 
 main: com.untamedears.civchat.CivChat
 
-version: .81
+version: .90
 
 author: Rourke750, ibbignerd
 
@@ -31,8 +31,13 @@ commands:
       permission: civchat.admin
 
    groupchat:
+
       description: Command for talking to Citadel Groups.
+
       usage: /<command> <group> <message>
+
+      aliases: g, group
+
 permissions:
 
    civchat.admin:
