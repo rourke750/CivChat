@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.untamedears.citadel.entity.Faction;
 
@@ -21,10 +23,15 @@ public class ChatListener implements Listener {
     public ChatListener(ChatManager instance) {
         chat = instance;
     }
-    /*
-     * TODO: Remove Death messages 
-     * TODO: Remove logging messages
-     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerLogin(PlayerJoinEvent event){
+        event.setJoinMessage(null);
+    }
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerLogout(PlayerQuitEvent event){
+    	event.setQuitMessage(null);
+    }
+   
     @EventHandler(priority = EventPriority.HIGH)
     public void PlayerChatEvent(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
@@ -43,7 +50,7 @@ public class ChatListener implements Listener {
             } 
             else {
                 chat.removeChannel(player.getName());
-                player.sendMessage(ChatColor.GOLD + "The player you were chatting with has gone offline. You are now in regular chat.");
+                player.sendMessage(ChatColor.RED + "The player you were chatting with has gone offline. You are now in regular chat.");
             }
         }
         if(group!=null){
