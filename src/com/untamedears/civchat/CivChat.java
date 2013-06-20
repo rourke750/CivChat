@@ -28,7 +28,29 @@ public class CivChat extends JavaPlugin implements Listener {
     }
 
     public void initConfig() {
-        config.options().header(" Authors: Rourke750, ibbignerd\n Last updated on 06/15/13\n This plugin was designed for use by Civcraft\n\n garblevariation: the range added to the garble to make it more random\n defaultcolor: Default color of chat. Must use a ChatColor.COLOR option\n greyscale: as the reciever is farther away, the chat changes colors\n yvariation: The higher you are, the farther you can talk.\n     maxrange += yvariation amount * y of sender;\n yvariation amount: Multiplier amount of above\n range distance: amount subtracted from maxrange\n\n Below 0 range is no garble\n range garble: amount as a whole percent that the text should be garbled\n range color: if greyscale is true, color of chat based on range\n maxrange: distance a player can be heard");
+        config.options().header("Authors: Rourke750, ibbignerd" +
+            	"\n Last updated on 06/20/13" +
+        		"\nThis plugin was designed for use by Civcraft" +
+        		"\n \n " +
+        		"variation: The range from 0-value added to the garble to make it more random" +
+        		"\n defaultcolor: Default color of chat. Must use a ChatColor.COLOR option" +
+        		"\n greyscale: Chat changes for reciever based on distance. Configured below" +
+        		"\n yvariation: The higher the sender is, the farther the max chat range." +
+        		"\n   noGarbLevel: At what y level (and above) will the yvariation come into effect?" +
+        		"\n shout: Expand max range based on number of shout chars" +
+        		"\n   char: character uesd at the beginning of the message" +
+        		"\n   distanceAdded: Amount added to the max range to make chat go further" +
+        		"\n   hungerreduced: Amount of hunger reduced per shout char." +
+        		"\n whisper: Reduced chat range when whisper char is used" +
+        		"\n   char: Character used at the beginning of the message" +
+        		"\n   distance: set distance a whisper is heard" +
+        		"\n   color: configurable color for whisper messages" +
+        		"\n range: currently has 3 configurable distances" +
+        		"\n   distance: subtraced from maxrange (e.g. maxrange = 1000, " +
+        		"\n     distance = 100, from 900-1000 is the range)" +
+        		"\n   garble: Integer as a percent. (garble: 5 = 5% of string will be garbled)" +
+        		"\n   color: Color of chat for this range" +
+        		"\n maxrange: Max distance a player can be heard");
         if (!config.contains("chat.garblevariation")) {
             config.set("chat.variation", 5);
         }
