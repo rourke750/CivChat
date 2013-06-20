@@ -1,5 +1,5 @@
 #  Authors: Rourke750, ibbignerd
-#  Last updated on 06/15/13
+#  Last updated on 06/20/13
 #  This plugin was designed for use by Civcraft
 # 
 #  garblevariation: the range added to the garble to make it more random
@@ -15,12 +15,12 @@
 #  range color: if greyscale is true, color of chat based on range
 #  maxrange: distance a player can be heard
 chat:
-  variation: 5
+  variation: 0
   defaultcolor: WHITE
   greyscale: false
   yvariation:
     enabled: true
-    noGarbLevel: 70
+    noGarbLevel: 0
   shout:
     enabled: true
     char: '!'
@@ -33,15 +33,15 @@ chat:
     color: WHITE
   range:
     '0':
-      distance: 500
-      garble: 5
+      distance: 0
+      garble: 0
       color: GRAY
     '1':
-      distance: 350
-      garble: 15
+      distance: 0
+      garble: 0
       color: GRAY
     '2':
-      distance: 200
-      garble: 35
+      distance: 0
+      garble: 0
       color: DARK_GRAY
     maxrange: 1000
