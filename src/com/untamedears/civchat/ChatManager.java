@@ -17,7 +17,7 @@ import com.untamedears.citadel.Citadel;
 import com.untamedears.citadel.entity.Faction;
 
 /*
- * Coded by ibbignerd
+ * Coded by ibbignerd and Rourke750
  */
 public class ChatManager {
 
@@ -80,8 +80,8 @@ public class ChatManager {
     }
 
     public void sendPrivateMessage(Player from, Player to, String message) {
-        from.sendMessage(ChatColor.DARK_PURPLE + "To " + to.getDisplayName() + ": " + message);
-        to.sendMessage(ChatColor.DARK_PURPLE + "From " + from.getName() + ": " + message);
+        from.sendMessage(ChatColor.DARK_AQUA+ "To " + to.getDisplayName() + ": " + message);
+        to.sendMessage(ChatColor.DARK_AQUA+ "From " + from.getName() + ": " + message);
     }
 
     public void sendPlayerBroadcast(Player player, String message, Set<Player> receivers) {
@@ -193,7 +193,7 @@ public class ChatManager {
         }
     }
     public void GroupChat(Faction group, StringBuilder message, String player){
-    	Player player1= Bukkit.getPlayer(player);
+        Player player1= Bukkit.getPlayer(player);
     	Collection<Player> players=Citadel.getMemberManager().getOnlinePlayers();
     	String chat=message.toString();
     	for (Player reciever: players){
@@ -202,8 +202,8 @@ public class ChatManager {
     			&& group.isModerator(reciever.getName())){
     			continue;
     		}
-    		player1.sendMessage("To group"+group+": "+chat);
-    		reciever.sendMessage("Group "+group+", from "+player+": "+chat);
+    		player1.sendMessage(ChatColor.GOLD+"To group"+group+": "+chat);
+    		reciever.sendMessage(ChatColor.GOLD+"Group "+group+", from "+player+": "+chat);
     	}
     	
     }
@@ -212,14 +212,16 @@ public class ChatManager {
     	Collection<Player> players=Citadel.getMemberManager().getOnlinePlayers();
     	String chat=message.toString();
     	for (Player reciever: players){
-    		if (group.isMember(reciever.getName())
-    			&& group.isFounder(reciever.getName())
-    			&& group.isModerator(reciever.getName())){
+    		if (!group.isMember(reciever.getName())
+    			&& !group.isFounder(reciever.getName())
+    			&& !group.isModerator(reciever.getName())){
     			continue;
     		}
-    		player1.sendMessage("To group"+group+": "+chat);
-    		reciever.sendMessage("Group "+group+", from "+player+": "+chat);
-    	}
+    		else{
+    		player1.sendMessage(ChatColor.DARK_AQUA+"To group"+group+": "+chat);
+    		reciever.sendMessage(ChatColor.DARK_AQUA+"Group "+group+", from "+player+": "+chat);
+    		}
+    		}
     }
     public void addGroupTalk(String player, Faction group){
     	if (getGroupTalk(player) != null) {
