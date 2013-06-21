@@ -196,14 +196,21 @@ public class ChatManager {
         Player player1= Bukkit.getPlayer(player);
     	Collection<Player> players=Citadel.getMemberManager().getOnlinePlayers();
     	String chat=message.toString();
+    	player1.sendMessage(ChatColor.GOLD+"To group"+group.getName()+": "+chat);
     	for (Player reciever: players){
     		if (group.isMember(reciever.getName())
     			&& group.isFounder(reciever.getName())
     			&& group.isModerator(reciever.getName())){
     			continue;
     		}
-    		player1.sendMessage(ChatColor.GOLD+"To group"+group+": "+chat);
-    		reciever.sendMessage(ChatColor.GOLD+"Group "+group+", from "+player+": "+chat);
+    		else{
+    		if (reciever.getName()==player1.getName()){
+    			continue;
+    		}
+    		else{
+    		reciever.sendMessage(ChatColor.GOLD+"Group "+group.getName()+", from "+player+": "+chat);
+    		}
+    		}
     	}
     	
     }
@@ -211,6 +218,7 @@ public class ChatManager {
     	Player player1= Bukkit.getPlayer(player);
     	Collection<Player> players=Citadel.getMemberManager().getOnlinePlayers();
     	String chat=message.toString();
+    	player1.sendMessage(ChatColor.DARK_AQUA+"To group"+group.getName()+": "+chat);
     	for (Player reciever: players){
     		if (!group.isMember(reciever.getName())
     			&& !group.isFounder(reciever.getName())
@@ -218,8 +226,10 @@ public class ChatManager {
     			continue;
     		}
     		else{
-    		player1.sendMessage(ChatColor.DARK_AQUA+"To group"+group+": "+chat);
-    		reciever.sendMessage(ChatColor.DARK_AQUA+"Group "+group+", from "+player+": "+chat);
+    		if (reciever.getName()==player1.getName()){
+    			return;
+    		}
+    		reciever.sendMessage(ChatColor.DARK_AQUA+"Group "+group.getName()+", from "+player+": "+chat);
     		}
     		}
     }
