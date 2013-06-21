@@ -25,7 +25,7 @@ public class Commands implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("tell")) {
+        if (label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("message") || label.equalsIgnoreCase("msg") || label.equalsIgnoreCase("m")) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("You have to be a player to use that command!");
                 return true;
@@ -126,11 +126,23 @@ public class Commands implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "You Do not have Permissions civchat.admin");
             }
         }
-        if (label.equalsIgnoreCase("groupchat")){
+        if (label.equalsIgnoreCase("groupchat") || label.equalsIgnoreCase("g") || label.equalsIgnoreCase("group")){
         	
         	Player player = (Player) sender;
         	StringBuilder message = new StringBuilder();
+        	if (args.length<1){
+        		if (chatManager.getGroupTalk(player.getName())==null){
+        			sender.sendMessage(ChatColor.RED+"Specify a group to use.");
+        			return true;
+        		}
+        		else{
+        		sender.sendMessage(ChatColor.RED+"You have been moved to normal chat.");
+    			chatManager.removeGroupTalk(player.getName());
+    			return true;
+        		}
+        	}
         	Faction group=Citadel.getGroupManager().getGroup(args[0]);
+        	
         	if (group==null){
         		sender.sendMessage(ChatColor.RED+"Not a valid group name");
         		return true;
@@ -141,11 +153,7 @@ public class Commands implements CommandExecutor {
         		sender.sendMessage(ChatColor.RED+"You are not in that group.");
         		return true;
         	}
-        	if (args.length<1){
-        		sender.sendMessage(ChatColor.RED+"You have been moved to normal chat.");
-    			chatManager.removeGroupTalk(player.getName());
-    			return true;
-        	}
+        	
         	if (args.length==1){
         		if (chatManager.getGroupTalk(player.getName())==null){
         			if (chatManager.getChannel(player.getName()) != null){
