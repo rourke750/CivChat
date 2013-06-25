@@ -2,10 +2,8 @@ package com.untamedears.civchat;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import org.apache.commons.lang.StringUtils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,51 +13,58 @@ import org.bukkit.entity.Player;
 
 import com.untamedears.citadel.Citadel;
 import com.untamedears.citadel.entity.Faction;
-import org.bukkit.Material;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
- * Coded by ibbignerd & Rourke750
+ * Coded by ibbignerd
  */
 public class ChatManager {
 
     private CivChat plugin = null;
     private FileConfiguration config;
-    private double chatmax;
-    private boolean garbleEnabled;
+    public double chatmax;
+    public boolean garbleEnabled;
     private double chatDist1;
     private int garble1;
     private double chatDist2;
     private int garble2;
     private int garblevar;
-    private boolean greyscale;
+    public boolean greyscale;
     private String defaultcolor;
     private String color1;
     private String color2;
-    private boolean yvar;
-    private int ynogarb;
-    private boolean shout;
-    private String shoutChar;
-    private int shoutDist;
-    private int shoutHunger;
-    private boolean whisper;
-    private String whisperChar;
-    private int whisperDist;
+    public boolean yvar;
+    public int ynogarb;
+    public boolean shout;
+    public String shoutChar;
+    public int shoutDist;
+    public boolean whisper;
+    public String whisperChar;
+    public int whisperDist;
     private String whisperColor;
     private HashMap<String, Faction> groupchat = new HashMap<>();
     private HashMap<String, String> channels = new HashMap<>();
     private String replacement = "abcdefghijklmnopqrstuvwxyz";
+    private HashMap<Player, Long> shoutList = new HashMap<>();
+    public long shoutCool;
+    public int shoutHunger;
 
     public ChatManager(CivChat pluginInstance) {
         plugin = pluginInstance;
         config = plugin.getConfig();
         chatmax = config.getDouble("chat.maxrange", 1000);
         garblevar = config.getInt("chat.garblevariation", 5);
-        yvar = config.getBoolean("chat.yvariation.enabled", false);
+        yvar = config.getBoolean("chat.yvariation.enabled", true);
         ynogarb = config.getInt("chat.yvariation.noGarbLevel", 70);
-        shout = config.getBoolean("chat.shout.enabled", false);
+        shout = config.getBoolean("chat.shout.enabled", true);
         shoutChar = config.getString("chat.shout.char", "!");
         shoutDist = config.getInt("chat.shout.distanceAdded", 100);
-        shoutHunger = config.getInt("chat.shout.hungerreduced", 1);
+        shoutHunger = config.getInt("chat.shout.hungerreduced", 4);
+        shoutCool = config.getLong("chat.shout.cooldown", 10) * 1000;
         whisper = config.getBoolean("chat.whisper.enabled", true);
         whisperChar = config.getString("chat.whisper.char", "#");
         whisperDist = config.getInt("chat.whisper.distance", 50);
@@ -73,15 +78,16 @@ public class ChatManager {
         chatDist2 = chatmax - config.getDouble("chat.range.2.distance", 50);
         garble2 = config.getInt("chat.range.2.garble", 0);
         color2 = config.getString("color.range.2.color", "DARK_GRAY");
-
     }
 
     public void sendPrivateMessage(Player from, Player to, String message) {
-        from.sendMessage(ChatColor.DARK_AQUA + "To " + to.getDisplayName() + ": " + message);
-        to.sendMessage(ChatColor.DARK_AQUA + "From " + from.getName() + ": " + message);
+        from.sendMessage(ChatColor.DARK_PURPLE + "To " + to.getName() + ": " + message);
+        to.sendMessage(ChatColor.DARK_PURPLE + "From " + from.getName() + ": " + message);
     }
 
     public void sendPlayerBroadcast(Player player, String message, Set<Player> receivers) {
+        tL(player, "Broadcast", message);
+
         Location location = player.getLocation();
         int x = location.getBlockX();
         int y = location.getBlockY();
@@ -95,15 +101,31 @@ public class ChatManager {
             added = Math.pow(1.1, (y - ynogarb) / 14) * (y - ynogarb);
             chatrange += added;
         }
-        
-        String shoutsub = message.subSequence(0, 3).toString();
+
         if (shout && message.startsWith(shoutChar)) {
-            for (int i = 0; i < StringUtils.countMatches(shoutsub, "!"); i++) {
-                
-                chatrange += shoutDist;
+            if (shoutList.get(player) != null && System.currentTimeMillis() - shoutList.get(player) >= shoutCool) {
+                shoutList.remove(player);
             }
-            player.sendMessage("number of !'s " + StringUtils.countMatches(shoutsub, "!"));
-            player.sendMessage("Chat range: " + chatrange);
+
+            if (shoutList.get(player) == null) {
+                Float sat = player.getSaturation();
+                if (sat > 0) {
+                    sat -= shoutHunger;
+                    if (sat <= 0) {
+                        player.setSaturation(0);
+                        player.setFoodLevel(player.getFoodLevel() - Integer.parseInt(sat + ""));
+                    } else {
+                        player.setSaturation(player.getSaturation() - sat);
+                    }
+                } else {
+                    player.setFoodLevel(player.getFoodLevel() - shoutHunger);
+                }
+                chatrange += shoutDist;
+                shoutList.put(player, System.currentTimeMillis());
+            } else {
+                player.sendMessage(ChatColor.RED + "Shout under cooldown, please wait " 
+                        + ((((shoutList.get(player) - System.currentTimeMillis()) + shoutCool) / 1000) + 1) + " seconds");
+            }
         }
 
         for (Player receiver : receivers) {
@@ -125,7 +147,6 @@ public class ChatManager {
                 color = ChatColor.valueOf(whisperColor);
                 randGarble = 0;
             } else if (chatdist <= chatDist2 && chatdist > chatDist1) {
-                player.sendMessage(receiver.getDisplayName() + "is within range1");
                 if (garbleEnabled) {
                     randGarble = rand.nextInt(garblevar) + garble1;
                 }
@@ -133,7 +154,6 @@ public class ChatManager {
                     color = ChatColor.valueOf(color1);
                 }
             } else if (chatdist <= chatrange && chatdist > chatDist2) {
-                player.sendMessage(receiver.getDisplayName() + " is within range2");
                 if (garbleEnabled) {
                     randGarble = rand.nextInt(garblevar) + garble2;
                 }
@@ -262,6 +282,21 @@ public class ChatManager {
     public void removeGroupTalk(String player) {
         if (groupchat.containsKey(player)) {
             groupchat.remove(player);
+        }
+    }
+
+    public void tL(Player sender, String type, String message) {
+        String date = new SimpleDateFormat("dd-MM HH:MM:ss").format(new Date());
+        String name = sender.getName();
+        String loc = (int) sender.getLocation().getX() + ", " + (int) sender.getLocation().getY() + ", " + (int) sender.getLocation().getZ();
+        String textLine = "[" + date + "] [" + loc + "] [" + type + "] [" + name + "] " + message;
+
+        try {
+            plugin.writer.write(textLine);
+            plugin.writer.newLine();
+            plugin.writer.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
