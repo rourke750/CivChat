@@ -20,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
- * Coded by ibbignerd
+ * Coded by ibbignerd and Rourke750
  */
 public class ChatManager {
 
