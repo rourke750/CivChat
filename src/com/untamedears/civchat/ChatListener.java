@@ -1,5 +1,6 @@
 package com.untamedears.civchat;
 
+import com.untamedears.citadel.entity.Faction;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -51,6 +52,7 @@ public class ChatListener implements Listener {
         String message = event.getMessage();
         Player player = event.getPlayer();
         String channel = chat.getChannel(player.getName());
+        Faction group = chat.getGroupTalk(player.getName());
 
         if (channel != null) {
             Player to = Bukkit.getPlayerExact(channel);
@@ -61,7 +63,12 @@ public class ChatListener implements Listener {
             } else {
                 chat.removeChannel(player.getName());
                 player.sendMessage(ChatColor.GOLD + "The player you were chatting with has gone offline. You are now in regular chat.");
+                return;
             }
+        }
+        if (group != null) {
+            chat.PrivateGroupChat(group, message, player.getName());
+            return;
         }
 
         chat.sendPlayerBroadcast(player, message, event.getRecipients());

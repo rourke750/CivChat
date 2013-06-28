@@ -29,7 +29,6 @@ public class CivChat extends JavaPlugin implements Listener {
     private FileConfiguration config = null;
     public File record = null;
     public BufferedWriter writer;
-    private String str;
 
     public void onEnable() {
         config = getConfig();
@@ -189,6 +188,9 @@ public class CivChat extends JavaPlugin implements Listener {
         }
         if (!config.contains("chat.shout.distanceAdded")) {
             config.set("chat.shout.distanceAdded", 300);
+        }
+        if (!config.contains("chat.shout.color")) {
+            config.set("chat.shout.color", "WHITE");
         }
         if (!config.contains("chat.shout.hungerreduced")) {
             config.set("chat.shout.hungerreduced", 4);
