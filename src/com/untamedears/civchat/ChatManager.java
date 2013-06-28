@@ -226,9 +226,9 @@ public class ChatManager {
         String chat = message.toString();
         player1.sendMessage(ChatColor.DARK_AQUA + "To group" + group.getName() + ": " + chat);
         for (Player reciever : players) {
-            if (!group.isMember(reciever.getName())
-                    && !group.isFounder(reciever.getName())
-                    && !group.isModerator(reciever.getName())) {
+            if (group.isMember(reciever.getName())
+                    && group.isFounder(reciever.getName())
+                    && group.isModerator(reciever.getName())) {
                 continue;
             } else {
                 if (reciever.getName() == player1.getName()) {
