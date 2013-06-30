@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  * Coded by ibbignerd
  */
 public class ChatManager {
-
+	private List<String> temp;
     private Commands commands;
     private CivChat plugin = null;
     private FileConfiguration config;
@@ -242,9 +242,9 @@ public class ChatManager {
         String chat = message.toString();
         player1.sendMessage(ChatColor.DARK_AQUA + "To group " + group.getName() + ": " + chat);
         for (Player reciever : players) {
-            if (group.isMember(reciever.getName())
-                    && group.isFounder(reciever.getName())
-                    && group.isModerator(reciever.getName())) {
+            if (!group.isMember(reciever.getName())
+                    && !group.isFounder(reciever.getName())
+                    && !group.isModerator(reciever.getName())) {
                 continue;
             } else {
                 if (reciever.getName() == player1.getName()) {
@@ -332,20 +332,20 @@ public class ChatManager {
         }
         return player;
     }
-//    public boolean isIgnoring(String muter, String muted) {
-////        try {
-//            if (commands.ignoreList.containsKey(muter)) {
-//                List<String> temp = commands.ignoreList.get(muter);
-//                Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, temp.toString(), "");
-//                if (temp.contains(muted)) {
-//                    Bukkit.getPlayer(muted).sendMessage(ChatColor.RED + Bukkit.getPlayer(muter).getName() + " has muted you.");
-//                    return true;
-//                }
-//            }
-////        } catch (NullPointerException e) {
-////            return false;
-////        }
-//
-//        return false;
-//    }
+    public boolean isIgnoring(String muter, String muted) {
+        try {
+            if (commands.ignoreList.containsKey(muter)) {
+                temp = commands.ignoreList.get(muter);
+                Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, temp.toString(), "");
+                if (temp.contains(muted)) {
+                    Bukkit.getPlayer(muted).sendMessage(ChatColor.RED + Bukkit.getPlayer(muter).getName() + " has muted you.");
+                    return true;
+                }
+            }
+        } catch (NullPointerException e) {
+            return false;
+        }
+
+        return false;
+    }
 }
