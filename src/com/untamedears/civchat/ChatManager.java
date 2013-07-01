@@ -21,7 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
- * Coded by ibbignerd
+ * Coded by ibbignerd and Rourke750
  */
 public class ChatManager {
     private List<String> temp;
@@ -244,8 +244,8 @@ public class ChatManager {
         player1.sendMessage(ChatColor.DARK_AQUA + "To group " + group.getName() + ": " + chat);
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
-                    && group.isFounder(reciever.getName())
-                    && group.isModerator(reciever.getName())) {
+                    && !group.isFounder(reciever.getName())
+                    && !group.isModerator(reciever.getName())) {
                 continue;
             } else {
                 if (reciever.getName() == player1.getName()) {
