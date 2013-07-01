@@ -25,7 +25,8 @@ public class Commands implements CommandExecutor {
     private ChatManager chatManager;
     private HashMap<String, String> replyList = new HashMap<>();
     public HashMap<String, List<String>> ignoreList = new HashMap<>();
-
+    
+    private List<String> temp;
     public Commands(ChatManager chatManagerInstance, CivChat instance) {
         chatManager = chatManagerInstance;
         civ = instance;
@@ -43,8 +44,11 @@ public class Commands implements CommandExecutor {
             if (args.length < 1) {
                 if (chatManager.getChannel(player.getName()) == null) {
                     player.sendMessage(ChatColor.RED + "Usage: /tell <player>");
-                } else {
+                } 
+                
+                		else {
                     chatManager.removeChannel(player.getName());
+                    chatManager.removeGroupTalk(player.getName());
                     player.sendMessage(ChatColor.RED + "You have moved to regular chat.");
                 }
                 return true;
@@ -258,7 +262,7 @@ public class Commands implements CommandExecutor {
                     Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, toAdd + "", "");
                     sender.sendMessage(ChatColor.RED + receiver.getName() + ChatColor.YELLOW + " can no longer PM you");
                 } else {//if sender does have a record
-                    List<String> temp = ignoreList.get(sender.getName());
+                    temp = ignoreList.get(sender.getName());
                     temp.add(temp.size(), receiver.getName());
                     if (temp.contains(receiver.getName())) {
                         temp.remove(receiver.getName());
