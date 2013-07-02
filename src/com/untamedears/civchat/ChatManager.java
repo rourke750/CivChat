@@ -55,7 +55,8 @@ public class ChatManager {
     public long shoutCool;
     public int shoutHunger;
     private String shoutColor;
-
+    private HashMap<String, List<String>> ignoreList = new HashMap<>();
+    private List<String> removeplayers;
     public ChatManager(CivChat pluginInstance) {
         plugin = pluginInstance;
         config = plugin.getConfig();
@@ -336,8 +337,8 @@ public class ChatManager {
 
     public boolean isIgnoring(String muter, String muted) {
         try {
-            if (commands.ignoreList.containsKey(muter)) {
-                temp = commands.ignoreList.get(muter);
+            if (ignoreList.containsKey(muter)) {
+                temp = ignoreList.get(muter);
                 Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, temp.toString(), "");
                 if (temp.contains(muted)) {
                     Bukkit.getPlayer(muted).sendMessage(ChatColor.RED + Bukkit.getPlayer(muter).getName() + " has muted you.");
@@ -349,5 +350,26 @@ public class ChatManager {
         }
 
         return false;
+    }
+    public void setIgnoreList(String player, String reciever){
+    	List<String> recievers= ignoreList.get(player);
+    	recievers.add(reciever);
+    	ignoreList.put(player, recievers);
+    }
+    public List<String> getIgnoreList(String player){
+    	List<String> reciever;
+    	reciever=ignoreList.get(player);
+    	return reciever;
+    }
+    public void removeIgnore(String player, String reciever){
+    	
+    	for (String x: ignoreList.get(player)){
+    		if (x!=reciever){
+    			continue;
+    		}
+    		else{removeplayers.add(x);}
+    	}
+    	ignoreList.remove(player);
+    	ignoreList.put(player, removeplayers);
     }
 }
