@@ -57,6 +57,7 @@ public class ChatManager {
     private String shoutColor;
     private HashMap<String, List<String>> ignoreList = new HashMap<>();
     private List<String> removeplayers;
+    private List<String> recievers;
     public ChatManager(CivChat pluginInstance) {
         plugin = pluginInstance;
         config = plugin.getConfig();
@@ -263,7 +264,7 @@ public class ChatManager {
         Player player1 = Bukkit.getPlayer(player);
         Collection<Player> players = Citadel.getMemberManager().getOnlinePlayers();
         String chat = message.toString();
-        player1.sendMessage(ChatColor.DARK_AQUA + "To group" + group.getName() + ": " + chat);
+        player1.sendMessage(ChatColor.DARK_AQUA + "To group: " + group.getName() + ": " + chat);
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
                     && !group.isFounder(reciever.getName())
@@ -352,9 +353,17 @@ public class ChatManager {
         return false;
     }
     public void setIgnoreList(String player, String reciever){
-    	List<String> recievers= ignoreList.get(player);
+    	if(ignoreList.size()>=1){
+    	recievers= ignoreList.get(player);
+    	ignoreList.clear();
     	recievers.add(reciever);
     	ignoreList.put(player, recievers);
+    	}
+    	else {
+    		 recievers.add(reciever);
+    		ignoreList.put(player, recievers);
+    	}
+    	
     }
     public List<String> getIgnoreList(String player){
     	List<String> reciever;
