@@ -1,9 +1,15 @@
 package com.untamedears.civchat;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,22 +19,15 @@ import org.bukkit.entity.Player;
 
 import com.untamedears.citadel.Citadel;
 import com.untamedears.citadel.entity.Faction;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * Coded by ibbignerd and Rourke750
  */
 public class ChatManager {
     private List<String> temp;
-    private Commands commands;
     private CivChat plugin = null;
     private FileConfiguration config;
-    public double chatmax;
+    public double chatMax;
     public boolean garbleEnabled;
     private double chatDist1;
     private int garble1;
@@ -36,7 +35,7 @@ public class ChatManager {
     private int garble2;
     private int garblevar;
     public boolean greyscale;
-    private String defaultcolor;
+    private String defaultColor;
     private String color1;
     private String color2;
     public boolean yvar;
@@ -57,11 +56,11 @@ public class ChatManager {
     private String shoutColor;
     private HashMap<String, List<String>> ignoreList = new HashMap<>();
     private List<String> removeplayers;
-    private List<String> recievers;
+    private List<String> receivers;
     public ChatManager(CivChat pluginInstance) {
         plugin = pluginInstance;
         config = plugin.getConfig();
-        chatmax = config.getDouble("chat.maxrange", 1000);
+        chatMax = config.getDouble("chat.maxrange", 1000);
         garblevar = config.getInt("chat.garblevariation", 5);
         yvar = config.getBoolean("chat.yvariation.enabled", true);
         ynogarb = config.getInt("chat.yvariation.noGarbLevel", 70);
@@ -75,15 +74,23 @@ public class ChatManager {
         whisperChar = config.getString("chat.whisper.char", "#");
         whisperDist = config.getInt("chat.whisper.distance", 50);
         whisperColor = config.getString("chat.whisper.color", "ITALIC");
-        defaultcolor = config.getString("chat.defaultcolor", "WHITE");
+        defaultColor = config.getString("chat.defaultcolor", "WHITE");
         greyscale = config.getBoolean("chat.greyscale", true);
         garbleEnabled = config.getBoolean("chat.range.garbleEnabled", false);
-        chatDist1 = chatmax - config.getDouble("chat.range.1.distance", 100);
+        chatDist1 = chatMax - config.getDouble("chat.range.1.distance", 100);
         garble1 = config.getInt("chat.range.1.garble", 0);
         color1 = config.getString("chat.range.1.color", "GRAY");
-        chatDist2 = chatmax - config.getDouble("chat.range.2.distance", 50);
+        chatDist2 = chatMax - config.getDouble("chat.range.2.distance", 50);
         garble2 = config.getInt("chat.range.2.garble", 0);
         color2 = config.getString("color.range.2.color", "DARK_GRAY");
+        
+        BroadcastType.NORMAL.setChatRange(chatMax);
+        BroadcastType.WHISPER.setChatRange(whisperDist);
+        BroadcastType.SHOUT.setChatRange(shoutDist);
+        
+        BroadcastType.NORMAL.setChatPrefix(defaultColor);
+        BroadcastType.WHISPER.setChatPrefix(whisperColor);
+        BroadcastType.SHOUT.setChatPrefix(shoutColor);
     }
 
     public void sendPrivateMessage(Player from, Player to, String message) {
@@ -103,41 +110,54 @@ public class ChatManager {
         int y = location.getBlockY();
         int z = location.getBlockZ();
         double chatdist = 0;
-        boolean whispering = false;
-        double chatrange = chatmax;
         double added = 0;
-        boolean shouting = false;
+        
+        BroadcastType bType;
+        
+        if (shout && message.startsWith(shoutChar)) {
+        	bType = BroadcastType.SHOUT;
+        }
+        else if (whisper && message.startsWith(whisperChar)) {
+        	bType = BroadcastType.WHISPER;
+        }
+        else {
+        	bType = BroadcastType.NORMAL;
+        }
+        
+        double chatrange = bType.getChatRange();
 
         if (yvar && !message.startsWith(whisperChar) && y > ynogarb) {
             added = Math.pow(1.1, (y - ynogarb) / 14) * (y - ynogarb);
             chatrange += added;
         }
-
-        if (shout && message.startsWith(shoutChar)) {
-            if (shoutList.get(player) != null && System.currentTimeMillis() - shoutList.get(player) >= shoutCool) {
+        
+        if(bType == BroadcastType.SHOUT) {
+        	if (shoutList.get(player) != null && System.currentTimeMillis() - shoutList.get(player) >= shoutCool) {
                 shoutList.remove(player);
             }
 
             if (shoutList.get(player) == null) {
-                Float sat = player.getSaturation();
-                if (sat > 0) {
-                    sat -= shoutHunger;
-                    if (sat <= 0) {
-                        player.setSaturation(0);
-                        player.setFoodLevel(player.getFoodLevel() - Integer.parseInt(sat + ""));
-                    } else {
-                        player.setSaturation(player.getSaturation() - sat);
-                    }
-                } else {
-                    int food = player.getFoodLevel() - shoutHunger;
-                    if (food < 0) {
-                        food = 0;
-                    }
-                    player.setFoodLevel(food);
+                float saturation = player.getSaturation();
+                int food = player.getFoodLevel();
+                
+                if(saturation + food > shoutHunger) {
+                	saturation -= shoutHunger;
+                	
+                	if(saturation < 0) {
+                		food += saturation;
+                		saturation = 0;
+                	}
+                	
+                	player.setFoodLevel(food);
+                	player.setSaturation(saturation);
+                	
+                	shoutList.put(player, System.currentTimeMillis());
                 }
-                chatrange += shoutDist;
-                shoutList.put(player, System.currentTimeMillis());
-                shouting = true;
+                else {
+                	player.sendMessage(ChatColor.RED + "You are too hungry to shout!");
+                	return;
+                }
+                
             } else {
                 player.sendMessage(ChatColor.RED + "Shout under cooldown, please wait "
                         + ((((shoutList.get(player) - System.currentTimeMillis()) + shoutCool) / 1000) + 1) + " seconds");
@@ -149,7 +169,7 @@ public class ChatManager {
             String chat = message;
             Random rand = new Random();
             double randGarble = 0;
-            ChatColor color = ChatColor.valueOf(defaultcolor);
+            String prefix = bType.getChatPrefix();
 
             int rx = receiver.getLocation().getBlockX();
             int ry = receiver.getLocation().getBlockY();
@@ -157,24 +177,21 @@ public class ChatManager {
 
             chatdist = Math.sqrt(Math.pow(x - rx, 2) + Math.pow(y - ry, 2) + Math.pow(z - rz, 2));
 
-            whispering = whisper && message.startsWith(whisperChar);
-            if (whispering) {
-                chatrange = whisperDist;
-                color = ChatColor.valueOf(whisperColor);
+            if(bType == BroadcastType.WHISPER) {
                 randGarble = 0;
             } else if (chatdist <= chatDist2 && chatdist > chatDist1) {
                 if (garbleEnabled) {
                     randGarble = rand.nextInt(garblevar) + garble1;
                 }
                 if (greyscale) {
-                    color = ChatColor.valueOf(color1);
+                    prefix = ChatColor.valueOf(color1).toString();
                 }
             } else if (chatdist <= chatrange && chatdist > chatDist2) {
                 if (garbleEnabled) {
                     randGarble = rand.nextInt(garblevar) + garble2;
                 }
                 if (greyscale) {
-                    color = ChatColor.valueOf(color2);
+                    prefix = ChatColor.valueOf(color2).toString();
                 }
             }
             if (garbleEnabled) {
@@ -184,13 +201,13 @@ public class ChatManager {
                 chat = message;
             }
             if (chatdist <= chatrange) {
-                if (whispering) {
-                    receiver.sendMessage(color + player.getDisplayName() + " whispered: " + chat.substring(1));
-                } else if (shouting) {
-                    color = ChatColor.valueOf(shoutColor);
-                    receiver.sendMessage(color + player.getDisplayName() + " shouted: " + chat.substring(1));
+                if (bType == BroadcastType.WHISPER) {
+                    receiver.sendMessage(prefix + player.getDisplayName() + " whispered: " + chat.substring(1));
+                } else if (bType == BroadcastType.SHOUT) {
+                    prefix = ChatColor.valueOf(shoutColor).toString();
+                    receiver.sendMessage(prefix + player.getDisplayName() + " shouted: " + chat.substring(1));
                 } else {
-                    receiver.sendMessage(color + player.getDisplayName() + ": " + chat);
+                    receiver.sendMessage(prefix + player.getDisplayName() + ": " + chat);
                 }
             }
         }
@@ -354,14 +371,14 @@ public class ChatManager {
     }
     public void setIgnoreList(String player, String reciever){
     	if(ignoreList.size()>=1){
-    	recievers= ignoreList.get(player);
+    	receivers= ignoreList.get(player);
     	ignoreList.clear();
-    	recievers.add(reciever);
-    	ignoreList.put(player, recievers);
+    	receivers.add(reciever);
+    	ignoreList.put(player, receivers);
     	}
     	else {
-    		 recievers.add(reciever);
-    		ignoreList.put(player, recievers);
+    		 receivers.add(reciever);
+    		ignoreList.put(player, receivers);
     	}
     	
     }

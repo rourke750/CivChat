@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class ChatListener implements Listener {
 
     private ChatManager chat;
-    private CivChat main;
 
     public ChatListener(ChatManager instance) {
         chat = instance;
