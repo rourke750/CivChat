@@ -37,7 +37,7 @@ public class CivChat extends JavaPlugin implements Listener {
 
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String dir = this.getDataFolder() + File.separator + "ChatLogs" + File.separator;
-        Boolean a = (new File(dir).mkdirs());
+        new File(dir).mkdirs();
         record = new File(dir);
 
         fileManagement(date, dir);
