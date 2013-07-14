@@ -254,7 +254,7 @@ public class Commands implements CommandExecutor {
                 }
             	else{
             		int i=0;
-            		if (chatManager.getIgnoreList(player)==null){
+            		if (chatManager.getIgnoreList(player)!=null){
             			chatManager.setIgnoreList(player, reciever); // something wrong with this line.  Keeps sending null?
             			return true;
             		}
