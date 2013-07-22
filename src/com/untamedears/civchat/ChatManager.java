@@ -1,5 +1,6 @@
 package com.untamedears.civchat;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Random;
@@ -57,7 +58,6 @@ public class ChatManager {
     private String shoutColor;
     private HashMap<String, List<String>> ignoreList = new HashMap<>();
     private List<String> removeplayers;
-    private List<String> recievers;
     public ChatManager(CivChat pluginInstance) {
         plugin = pluginInstance;
         config = plugin.getConfig();
@@ -243,7 +243,7 @@ public class ChatManager {
         Player player1 = Bukkit.getPlayer(player);
         Collection<Player> players = Citadel.getMemberManager().getOnlinePlayers();
         String chat = message.toString();
-        player1.sendMessage(ChatColor.DARK_AQUA + "To group " + group.getName() + ": " + chat);
+        player1.sendMessage(ChatColor.DARK_AQUA + "To group: " + group.getName() + ": " + chat);
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
                     && !group.isFounder(reciever.getName())
@@ -263,7 +263,7 @@ public class ChatManager {
     public void PrivateGroupChat(Faction group, String message, String player) {
         Player player1 = Bukkit.getPlayer(player);
         Collection<Player> players = Citadel.getMemberManager().getOnlinePlayers();
-        String chat = message.toString();
+        String chat = message;
         player1.sendMessage(ChatColor.DARK_AQUA + "To group: " + group.getName() + ": " + chat);
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
@@ -272,10 +272,11 @@ public class ChatManager {
                 continue;
             } else {
                 if (reciever.getName() == player1.getName()) {
-                    return;
+                    continue;
                 }
+                else{
                 reciever.sendMessage(ChatColor.DARK_AQUA + "Group " + group.getName() + ", from " + player + ": " + chat);
-            }
+            }}
         }
     }
 
@@ -342,7 +343,6 @@ public class ChatManager {
                 temp = ignoreList.get(muter);
                 Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, temp.toString(), "");
                 if (temp.contains(muted)) {
-                    Bukkit.getPlayer(muted).sendMessage(ChatColor.RED + Bukkit.getPlayer(muter).getName() + " has muted you.");
                     return true;
                 }
             }
@@ -353,15 +353,18 @@ public class ChatManager {
         return false;
     }
     public void setIgnoreList(String player, String reciever){
+    	List<String> recievers=new ArrayList<String>();
     	if(ignoreList.size()>=1){
     	recievers= ignoreList.get(player);
     	ignoreList.clear();
     	recievers.add(reciever);
     	ignoreList.put(player, recievers);
+    	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
     	}
     	else {
-    		 recievers.add(reciever);
+    		recievers.add(reciever);
     		ignoreList.put(player, recievers);
+    		Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
     	}
     	
     }
@@ -374,9 +377,11 @@ public class ChatManager {
     	
     	for (String x: ignoreList.get(player)){
     		if (x!=reciever){
+    			Bukkit.getPlayerExact(player).sendMessage("Removed player "+ reciever +" from ignore list.");
     			continue;
     		}
-    		else{removeplayers.add(x);}
+    		else{removeplayers.add(x);
+    		}
     	}
     	ignoreList.remove(player);
     	ignoreList.put(player, removeplayers);

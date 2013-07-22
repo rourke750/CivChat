@@ -58,12 +58,13 @@ public class ChatListener implements Listener {
             Player to = Bukkit.getPlayerExact(channel);
 
             if (to != null) {
-                if(chat.isIgnoring(channel, player.getName())){
+                if(chat.isIgnoring(player.getName(),channel)){
                     player.sendMessage(ChatColor.YELLOW + channel + ChatColor.RED + " has muted you.");
                     return;
                 }
+                else{ 
                 chat.sendPrivateMessage(player, to, message);
-                return;
+                return; }
             } else {
                 chat.removeChannel(player.getName());
                 player.sendMessage(ChatColor.GOLD + "The player you were chatting with has gone offline. You are now in regular chat.");

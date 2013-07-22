@@ -241,7 +241,7 @@ public class Commands implements CommandExecutor {
             return true;
         }
 
-        if (label.equalsIgnoreCase("ignore") || label.equalsIgnoreCase("ig")) {//completely broken
+        if (label.equalsIgnoreCase("ignore") || label.equalsIgnoreCase("ig")) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("You have to be a player to use that command!");
                 return true;
@@ -260,12 +260,13 @@ public class Commands implements CommandExecutor {
                 }
             	else{
             		int i=0;
-            		if (chatManager.getIgnoreList(player)!=null){
-            			chatManager.setIgnoreList(player, reciever); // something wrong with this line.  Keeps sending null?
+            		if (chatManager.getIgnoreList(player)==null){
+            			chatManager.setIgnoreList(player, reciever);
             			return true;
             		}
+            		else{
             		for (String ignored:chatManager.getIgnoreList(player)){
-            			if (ignored==reciever){
+            			if (ignored.equals(reciever)){
             				chatManager.removeIgnore(sender.getName(), reciever);
             				i++;
             				return true;
@@ -277,7 +278,7 @@ public class Commands implements CommandExecutor {
             		chatManager.setIgnoreList(player, reciever);
             		return true;
             		}
-            		
+            		}
             	}
             }
            
@@ -343,7 +344,7 @@ public class Commands implements CommandExecutor {
                             + "     go to regular chat");
                 } else if (args[0].equalsIgnoreCase("info")) {
                     sender.sendMessage(chatPrefix + ChatColor.WHITE
-                            + " Version 0.96 \n"
+                            + " Version 1.0 \n"
                             + " Coded by: Rourke750 and ibbignerd");
                 } else if (args[0].equalsIgnoreCase("ignore")) {
                     sender.sendMessage(chatPrefix + ChatColor.WHITE
