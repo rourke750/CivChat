@@ -58,6 +58,7 @@ public class ChatManager {
     private String shoutColor;
     private HashMap<String, List<String>> ignoreList = new HashMap<>();
     private List<String> removeplayers;
+   
     public ChatManager(CivChat pluginInstance) {
         plugin = pluginInstance;
         config = plugin.getConfig();
@@ -145,9 +146,10 @@ public class ChatManager {
         }
 
         for (Player receiver : receivers) {
-        	if(isIgnoring(player.getName(), receiver.getName())==true){
+        	if(isIgnoring(receiver.getName(), player.getName())){
         		continue;
         	}
+        	else{
             double garble = 0;
             String chat = message;
             Random rand = new Random();
@@ -196,7 +198,7 @@ public class ChatManager {
                     receiver.sendMessage(color + player.getDisplayName() + ": " + chat);
                 }
             }
-        }
+        }}
     }
 
     private String shuffle(String input, double a) {
@@ -250,12 +252,14 @@ public class ChatManager {
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
                     && !group.isFounder(reciever.getName())
-                    && !group.isModerator(reciever.getName())
-                    && isIgnoring(player, reciever.getName())==true) {
+                    && !group.isModerator(reciever.getName())==true) {
                 continue;
             } 
             
             else {
+            	if (isIgnoring(reciever.getName(), player)){
+                	continue;
+                }
                 if (reciever.getName() == player1.getName()) {
                     continue;
                 } else {
@@ -274,10 +278,14 @@ public class ChatManager {
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
                     && !group.isFounder(reciever.getName())
-                    && !group.isModerator(reciever.getName()) 
-                    && isIgnoring(player, reciever.getName())==true) {
+                    && !group.isModerator(reciever.getName())) {
                 continue;
-            } else {
+            }
+            
+            else {
+            	if (isIgnoring(reciever.getName(), player)==true){
+                	continue;
+                }
                 if (reciever.getName() == player1.getName()) {
                     continue;
                 }
@@ -353,6 +361,9 @@ public class ChatManager {
                     return true;
                 }
             }
+            else{
+            	return false;
+            }
         } catch (NullPointerException e) {
             return false;
         }
@@ -361,20 +372,19 @@ public class ChatManager {
     }
     public void setIgnoreList(String player, String reciever){
     	List<String> recievers=new ArrayList<String>();
-    	if(ignoreList.size()>=1){
+    		if (ignoreList.get(player)!=null){
     	recievers= ignoreList.get(player);
     	recievers.add(reciever);
-    	ignoreList.clear();
+    	ignoreList.remove(player);
     	ignoreList.put(player, recievers);
     	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
     	}
-    	else {
-    		recievers.add(reciever);
-    		ignoreList.put(player, recievers);
-    		Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
-    	}
-    	
-    }
+    		else{
+    			recievers.add(reciever);
+    	    	ignoreList.put(player, recievers);
+    	    	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
+    			}
+    		}
     public List<String> getIgnoreList(String player){
     	List<String> reciever;
     	reciever=ignoreList.get(player);
