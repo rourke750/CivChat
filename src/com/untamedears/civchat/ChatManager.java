@@ -145,6 +145,9 @@ public class ChatManager {
         }
 
         for (Player receiver : receivers) {
+        	if(isIgnoring(player.getName(), receiver.getName())==true){
+        		continue;
+        	}
             double garble = 0;
             String chat = message;
             Random rand = new Random();
@@ -247,9 +250,12 @@ public class ChatManager {
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
                     && !group.isFounder(reciever.getName())
-                    && !group.isModerator(reciever.getName())) {
+                    && !group.isModerator(reciever.getName())
+                    && isIgnoring(player, reciever.getName())==true) {
                 continue;
-            } else {
+            } 
+            
+            else {
                 if (reciever.getName() == player1.getName()) {
                     continue;
                 } else {
@@ -268,7 +274,8 @@ public class ChatManager {
         for (Player reciever : players) {
             if (!group.isMember(reciever.getName())
                     && !group.isFounder(reciever.getName())
-                    && !group.isModerator(reciever.getName())) {
+                    && !group.isModerator(reciever.getName()) 
+                    && isIgnoring(player, reciever.getName())==true) {
                 continue;
             } else {
                 if (reciever.getName() == player1.getName()) {

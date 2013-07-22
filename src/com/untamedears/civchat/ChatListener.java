@@ -75,7 +75,7 @@ public class ChatListener implements Listener {
             chat.PrivateGroupChat(group, message, player.getName());
             return;
         }
-
+        
         chat.sendPlayerBroadcast(player, message, event.getRecipients());
     }
 }
