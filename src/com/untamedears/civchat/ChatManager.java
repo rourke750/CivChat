@@ -363,8 +363,8 @@ public class ChatManager {
     	List<String> recievers=new ArrayList<String>();
     	if(ignoreList.size()>=1){
     	recievers= ignoreList.get(player);
-    	ignoreList.clear();
     	recievers.add(reciever);
+    	ignoreList.clear();
     	ignoreList.put(player, recievers);
     	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
     	}
