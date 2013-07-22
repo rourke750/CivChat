@@ -1,7 +1,5 @@
 package com.untamedears.civchat;
 
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,6 +9,12 @@ import org.bukkit.entity.Player;
 
 import com.untamedears.citadel.Citadel;
 import com.untamedears.citadel.entity.Faction;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Coded by Rourke750 & ibbignerd
@@ -21,6 +25,8 @@ public class Commands implements CommandExecutor {
     private ChatManager chatManager;
     private HashMap<String, String> replyList = new HashMap<>();
     
+    
+    private List<String> temp;
     public Commands(ChatManager chatManagerInstance, CivChat instance) {
         chatManager = chatManagerInstance;
         civ = instance;
@@ -310,7 +316,7 @@ public class Commands implements CommandExecutor {
                             + " The higher you are the farther your messages can be heard");
                 } else if (args[0].equalsIgnoreCase("range")) {
                     sender.sendMessage(chatPrefix + ChatColor.WHITE
-                            + " The default chat range is " + (int) chatManager.chatMax + "m\n"
+                            + " The default chat range is " + (int) chatManager.chatmax + "m\n"
                             + " This can be extended by using shout or climbing a mountain\n");
                 } else if (args[0].equalsIgnoreCase("garble") && chatManager.garbleEnabled) {
                     sender.sendMessage(chatPrefix + ChatColor.WHITE
