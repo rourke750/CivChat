@@ -9,12 +9,21 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import com.untamedears.citadel.Citadel;
 import com.untamedears.citadel.entity.Faction;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -403,4 +412,34 @@ public class ChatManager {
     	ignoreList.remove(player);
     	ignoreList.put(player, removeplayers);
     }
+    public void load(File file) throws IOException{
+		FileInputStream fis = new FileInputStream(file);
+		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+		String line;
+		while ((line=br.readLine()) != null){
+			String parts[] =line.split(" ");
+			String owner= parts[0];
+			List<String> participants= new ArrayList<>();;
+			for(int x=1; x<=parts.length; x++){
+				participants.add(parts[x]);
+			}
+			ignoreList.put(owner, participants);		
+		}
+		fis.close();
+	}
+    public void save(File file) throws IOException{
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedWriter br = new BufferedWriter(new OutputStreamWriter(fos));
+		Set<String> main= ignoreList.keySet();
+		for (String z: main){
+			br.append(z);
+		for (String x: ignoreList.get(z)){
+		br.append(" ");	
+		br.append(x);
+		}
+		br.append("\n");
+		}
+		br.flush();
+		fos.close();
+	}
 }

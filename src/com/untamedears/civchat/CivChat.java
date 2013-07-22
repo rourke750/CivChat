@@ -28,6 +28,7 @@ public class CivChat extends JavaPlugin implements Listener {
     private ChatListener cl = null;
     private FileConfiguration config = null;
     public File record = null;
+    public File ignored=null;
     public BufferedWriter writer;
 
     public void onEnable() {
@@ -37,9 +38,10 @@ public class CivChat extends JavaPlugin implements Listener {
 
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String dir = this.getDataFolder() + File.separator + "ChatLogs" + File.separator;
+        String dirign= this.getDataFolder()+ File.separator+ "ignored"+ File.separator;        
         Boolean a = (new File(dir).mkdirs());
         record = new File(dir);
-
+        ignored= new File(dirign);
         fileManagement(date, dir);
 
         try {
@@ -56,7 +58,23 @@ public class CivChat extends JavaPlugin implements Listener {
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.WARNING, "File Failed" + ex, "");
         }
-
+        try{
+        	File existing = new File(dirign+".txt");
+        	if (existing.exists()) {
+                FileWriter fw = new FileWriter(existing.getAbsoluteFile(), true);
+                writer = new BufferedWriter(fw);
+                Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Existing file", "");
+                ignored=existing;
+                chat.load(existing);
+            } else {
+                Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Making a new file", "");
+                PrintWriter fstream = new PrintWriter(dirign +".txt");
+                writer = new BufferedWriter(fstream);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(CivChat.class.getName()).log(Level.WARNING, "File Failed" + ex, "");
+        }
+        
         try {
             writer.write("Chat log created at " + new Date());
             writer.newLine();
@@ -83,6 +101,7 @@ public class CivChat extends JavaPlugin implements Listener {
             writer.newLine();
             writer.flush();
             writer.close();
+            chat.save(ignored);
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, null, ex);
         }

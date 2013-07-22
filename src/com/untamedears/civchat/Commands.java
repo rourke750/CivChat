@@ -344,7 +344,7 @@ public class Commands implements CommandExecutor {
                             + "     go to regular chat");
                 } else if (args[0].equalsIgnoreCase("info")) {
                     sender.sendMessage(chatPrefix + ChatColor.WHITE
-                            + " Version 1.01 \n"
+                            + " Version 1.1 \n"
                             + " Coded by: Rourke750 and ibbignerd");
                 } else if (args[0].equalsIgnoreCase("ignore")) {
                     sender.sendMessage(chatPrefix + ChatColor.WHITE
