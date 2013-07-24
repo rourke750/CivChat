@@ -1,6 +1,6 @@
 name: CivChat
 main: com.untamedears.civchat.CivChat
-version: 1.01
+version: 1.12
 authors: [Rourke750, ibbignerd]
 commands:
    tell:
@@ -35,3 +35,5 @@ permissions:
    civchat.admin:
       description: Admin commands for civchat.
       default: op
+children:
+       civchat.admin: true

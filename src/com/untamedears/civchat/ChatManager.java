@@ -34,23 +34,22 @@ import java.util.logging.Logger;
  * Coded by ibbignerd and Rourke750
  */
 public class ChatManager {
-    private List<String> temp;
-    private Commands commands;
+    
     private CivChat plugin = null;
-    private FileConfiguration config;
     public double chatmax;
     public boolean garbleEnabled;
+    private Random random = new Random();
     private double chatDist1;
     private int garble1;
     private double chatDist2;
     private int garble2;
     private int garblevar;
-    public boolean greyscale;
+    private boolean greyscale;
     private String defaultcolor;
     private String color1;
     private String color2;
     public boolean yvar;
-    public int ynogarb;
+    private int ynogarb;
     public boolean shout;
     public String shoutChar;
     public int shoutDist;
@@ -58,17 +57,18 @@ public class ChatManager {
     public String whisperChar;
     public int whisperDist;
     private String whisperColor;
-    private HashMap<String, Faction> groupchat = new HashMap<>();
-    private HashMap<String, String> channels = new HashMap<>();
+    private HashMap<String, Faction> groupchat = new HashMap<String, Faction>();
+    private HashMap<String, String> channels = new HashMap<String, String>();
     private String replacement = "abcdefghijklmnopqrstuvwxyz";
-    private HashMap<Player, Long> shoutList = new HashMap<>();
+    private HashMap<Player, Long> shoutList = new HashMap<Player, Long>();
     public long shoutCool;
-    public int shoutHunger;
+    private int shoutHunger;
     private String shoutColor;
-    private HashMap<String, List<String>> ignoreList = new HashMap<>();
+    private HashMap<String, List<String>> ignoreList = new HashMap<String, List<String>>();
     private List<String> removeplayers;
    
     public ChatManager(CivChat pluginInstance) {
+    	FileConfiguration config;
         plugin = pluginInstance;
         config = plugin.getConfig();
         chatmax = config.getDouble("chat.maxrange", 1000);
@@ -106,7 +106,7 @@ public class ChatManager {
     }
 
     public void sendPlayerBroadcast(Player player, String message, Set<Player> receivers) {
-        tL(player, "Broadcast", message);
+    	SaveChat(player, "Broadcast", message);
 
         Location location = player.getLocation();
         int x = location.getBlockX();
@@ -161,7 +161,6 @@ public class ChatManager {
         	else{
             double garble = 0;
             String chat = message;
-            Random rand = new Random();
             double randGarble = 0;
             ChatColor color = ChatColor.valueOf(defaultcolor);
 
@@ -178,21 +177,21 @@ public class ChatManager {
                 randGarble = 0;
             } else if (chatdist <= chatDist2 && chatdist > chatDist1) {
                 if (garbleEnabled) {
-                    randGarble = rand.nextInt(garblevar) + garble1;
+                    randGarble = random.nextInt(garblevar) + garble1;
                 }
                 if (greyscale) {
                     color = ChatColor.valueOf(color1);
                 }
             } else if (chatdist <= chatrange && chatdist > chatDist2) {
                 if (garbleEnabled) {
-                    randGarble = rand.nextInt(garblevar) + garble2;
+                    randGarble = random.nextInt(garblevar) + garble2;
                 }
                 if (greyscale) {
                     color = ChatColor.valueOf(color2);
                 }
             }
             if (garbleEnabled) {
-                garble = chat.length() * (randGarble / 100);
+                garble = chat.length() * (randGarble / 100.0F);
                 chat = shuffle(chat, garble);
             } else {
                 chat = message;
@@ -212,7 +211,6 @@ public class ChatManager {
 
     private String shuffle(String input, double a) {
         int times = (int) a;
-        Random random = new Random();
         StringBuilder sb = new StringBuilder(input);
         for (int i = 0; i < times; i++) {
             int rand = random.nextInt(input.length());
@@ -232,7 +230,6 @@ public class ChatManager {
 
     public void addChannel(String player1, String player2) {
         if (getChannel(player1) != null) {
-            removeChannel(player1);
             channels.put(player1, player2);
         } else {
             channels.put(player1, player2);
@@ -240,11 +237,7 @@ public class ChatManager {
     }
 
     public String getChannel(String player) {
-        if (channels.containsKey(player)) {
-            return channels.get(player);
-        } else {
-            return null;
-        }
+    	return channels.get(player);
     }
 
     public void removeChannel(String player) {
@@ -265,16 +258,16 @@ public class ChatManager {
                 continue;
             } 
             
-            else {
+            
             	if (isIgnoring(reciever.getName(), player)){
                 	continue;
                 }
-                if (reciever.getName() == player1.getName()) {
+                if (reciever.getName().equals(player1.getName())) {
                     continue;
                 } else {
                     reciever.sendMessage(ChatColor.DARK_AQUA + "Group " + group.getName() + ", from " + player + ": " + chat);
                 }
-            }
+            
         }
 
     }
@@ -291,22 +284,21 @@ public class ChatManager {
                 continue;
             }
             
-            else {
-            	if (isIgnoring(reciever.getName(), player)==true){
+            
+            	if (isIgnoring(reciever.getName(), player) == true){
                 	continue;
                 }
-                if (reciever.getName() == player1.getName()) {
+                if (reciever.getName().equals(player1.getName())) {
                     continue;
                 }
-                else{
+               
                 reciever.sendMessage(ChatColor.DARK_AQUA + "Group " + group.getName() + ", from " + player + ": " + chat);
-            }}
+            
         }
     }
 
     public void addGroupTalk(String player, Faction group) {
         if (getGroupTalk(player) != null) {
-            removeGroupTalk(player);
             groupchat.put(player, group);
         } else {
             groupchat.put(player, group);
@@ -315,12 +307,7 @@ public class ChatManager {
     }
 
     public Faction getGroupTalk(String player) {
-        if (groupchat.containsKey(player)) {
             return groupchat.get(player);
-        } else {
-            return null;
-        }
-
     }
 
     public boolean isGroupTalk(String player) {
@@ -336,7 +323,7 @@ public class ChatManager {
         }
     }
 
-    public void tL(Player sender, String type, String message) {
+    public void SaveChat(Player sender, String type, String message) {
         String date = new SimpleDateFormat("dd-MM HH:mm:ss").format(new Date());
         String name = sender.getName();
         String loc = (int) sender.getLocation().getX() + ", " + (int) sender.getLocation().getY() + ", " + (int) sender.getLocation().getZ();
@@ -362,11 +349,11 @@ public class ChatManager {
     }
 
     public boolean isIgnoring(String muter, String muted) {
+    	List<String> ignorelist;
         try {
             if (ignoreList.containsKey(muter)) {
-                temp = ignoreList.get(muter);
-                Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, temp.toString(), "");
-                if (temp.contains(muted)) {
+            	ignorelist = ignoreList.get(muter);
+                if (ignorelist.contains(muted)) {
                     return true;
                 }
             }
@@ -384,7 +371,6 @@ public class ChatManager {
     		if (ignoreList.get(player)!=null){
     	recievers= ignoreList.get(player);
     	recievers.add(reciever);
-    	ignoreList.remove(player);
     	ignoreList.put(player, recievers);
     	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
     	}
@@ -395,9 +381,7 @@ public class ChatManager {
     			}
     		}
     public List<String> getIgnoreList(String player){
-    	List<String> reciever;
-    	reciever=ignoreList.get(player);
-    	return reciever;
+    	return ignoreList.get(player);
     }
     public void removeIgnore(String player, String reciever){
     	
@@ -409,7 +393,6 @@ public class ChatManager {
     		else{removeplayers.add(x);
     		}
     	}
-    	ignoreList.remove(player);
     	ignoreList.put(player, removeplayers);
     }
     public void load(File file) throws IOException{

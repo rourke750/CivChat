@@ -19,33 +19,32 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class ChatListener implements Listener {
 
     private ChatManager chat;
-    private CivChat main;
 
     public ChatListener(ChatManager instance) {
         chat = instance;
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent PlayerDeathEvent) {
         PlayerDeathEvent.setDeathMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         event.setLeaveMessage(null);
     }
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void PlayerChatEvent(AsyncPlayerChatEvent event) {
         event.setCancelled(true);
 

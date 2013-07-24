@@ -86,7 +86,7 @@ public class Commands implements CommandExecutor {
                     }
                     chatManager.sendPrivateMessage(player, receiver, message.toString());
 
-                    chatManager.tL(player, "P Message", "To " + receiver.getName() + ": " + message.toString());
+                    chatManager.SaveChat(player, "P Message", "To " + receiver.getName() + ": " + message.toString());
                     replyList.put(player.getName(), receiver.getName());
                     return true;
                 }
@@ -126,7 +126,7 @@ public class Commands implements CommandExecutor {
 
                         Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "To " + receiver + ": " + message);
                         Bukkit.getPlayer(receiver).sendMessage(ChatColor.LIGHT_PURPLE + "From " + player + ": " + message);
-                        chatManager.tL(Bukkit.getPlayerExact(player), "P Message", "To " + receiver + ": " + message.toString());
+                        chatManager.SaveChat(Bukkit.getPlayerExact(player), "P Message", "To " + receiver + ": " + message.toString());
                     } else {
                         Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "You will message " + ChatColor.YELLOW + replyList.get(player));
                     }
@@ -235,7 +235,7 @@ public class Commands implements CommandExecutor {
                 }
                 chatManager.GroupChat(group, message, sender.getName());
 
-                chatManager.tL(player, "GroupChat", group.toString() + " -> " + message.toString());
+                chatManager.SaveChat(player, "GroupChat", group.toString() + " -> " + message.toString());
                 return true;
             }
             return true;
