@@ -28,7 +28,7 @@ public class CivChat extends JavaPlugin implements Listener {
     private ChatListener cl = null;
     private FileConfiguration config = null;
     public File record = null;
-    public File ignored=null;
+    public File ignored;
     public BufferedWriter writer;
     public BufferedWriter writ;
 
@@ -36,13 +36,12 @@ public class CivChat extends JavaPlugin implements Listener {
         config = getConfig();
         initConfig();
         this.saveConfig();
-
+        chat = new ChatManager(this);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String dir = this.getDataFolder() + File.separator + "ChatLogs" + File.separator;
         String dirign= this.getDataFolder()+ File.separator+ "ignored"+ File.separator;        
         Boolean a = (new File(dir).mkdirs());
         record = new File(dir);
-        ignored= new File(dirign+"ignorelist.txt");
         fileManagement(date, dir);
         Boolean b=(new File(dirign).mkdirs());
 
@@ -60,16 +59,19 @@ public class CivChat extends JavaPlugin implements Listener {
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.WARNING, "File Failed" + ex, "");
         }
+        File existing = new File(dirign+"ignorelist.txt");
         try{
-        	if (ignored.exists()) {
-                FileWriter fw = new FileWriter(ignored.getAbsoluteFile(), true);
+        	if (existing.exists()) {
+                FileWriter fw = new FileWriter(existing.getAbsoluteFile(), true);
                 writ = new BufferedWriter(fw);
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Existing file", "");
+                ignored=existing;
                 chat.load(ignored);
             } else {
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Making a new file", "");
-                PrintWriter fstream = new PrintWriter(ignored);
+                PrintWriter fstream = new PrintWriter(existing);
                 writ = new BufferedWriter(fstream);
+                ignored=existing;
             }
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.WARNING, "File Failed" + ex, "");
@@ -83,8 +85,6 @@ public class CivChat extends JavaPlugin implements Listener {
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, "Could not write to file", ex);
         }
-
-        chat = new ChatManager(this);
         cl = new ChatListener(chat);
         registerEvents();
         Commands commands = new Commands(chat, this);

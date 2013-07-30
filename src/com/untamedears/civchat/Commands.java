@@ -379,6 +379,7 @@ public class Commands implements CommandExecutor {
         			
         		}
         		if (i==0){
+        			Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
         		chatManager.setIgnoreList(player, reciever);
         		return true;
         		}
