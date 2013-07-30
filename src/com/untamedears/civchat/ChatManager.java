@@ -203,7 +203,13 @@ public class ChatManager {
                     color = ChatColor.valueOf(shoutColor);
                     receiver.sendMessage(color + player.getDisplayName() + " shouted: " + chat.substring(1));
                 } else {
+
+                	if (receiver.getWorld()!=player.getWorld()){
+                		continue;
+                	}
+                	else{
                     receiver.sendMessage(color + player.getDisplayName() + ": " + chat);
+                	}
                 }
             }
         }}
