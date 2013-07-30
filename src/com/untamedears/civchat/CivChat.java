@@ -59,17 +59,18 @@ public class CivChat extends JavaPlugin implements Listener {
             Logger.getLogger(CivChat.class.getName()).log(Level.WARNING, "File Failed" + ex, "");
         }
         try{
-        	File existing = new File(dirign+".txt");
+        	File existing = new File(dirign+"ignorelist.txt");
         	if (existing.exists()) {
                 FileWriter fw = new FileWriter(existing.getAbsoluteFile(), true);
                 writer = buffered(fw);
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Existing file", "");
-                ignored=existing;
                 chat.load(existing);
+                ignored=existing;
             } else {
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Making a new file", "");
-                PrintWriter fstream = new PrintWriter(dirign +".txt");
+                PrintWriter fstream = new PrintWriter(existing);
                 writer = new BufferedWriter(fstream);
+                ignored=existing;
             }
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.WARNING, "File Failed" + ex, "");

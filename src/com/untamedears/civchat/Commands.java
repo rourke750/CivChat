@@ -386,7 +386,5 @@ public class Commands implements CommandExecutor {
         }
         return true;
     }
-    public void help(CommandSender sender, Command command, String label, String[] args){
-    	
-    }
+    
 }
