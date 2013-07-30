@@ -65,7 +65,7 @@ public class ChatManager {
     private int shoutHunger;
     private String shoutColor;
     private HashMap<String, List<String>> ignoreList = new HashMap<String, List<String>>();
-    private List<String> removeplayers;
+   
    
     public ChatManager(CivChat pluginInstance) {
     	FileConfiguration config;
@@ -382,9 +382,9 @@ public class ChatManager {
     	return ignoreList.get(player);
     }
     public void removeIgnore(String player, String reciever){
-    	
+    	 List<String> removeplayers= new ArrayList<String>();
     	for (String x: ignoreList.get(player)){
-    		if (!x.equals(reciever)){
+    		if (x.equals(reciever)){
     			continue;
     		}
     		else{removeplayers.add(x);

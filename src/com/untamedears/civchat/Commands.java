@@ -369,9 +369,10 @@ public class Commands implements CommandExecutor {
         		else{
         		for (String ignored:chatManager.getIgnoreList(player)){
         			if (ignored.equals(reciever)){
+        				i++;
         		    	Bukkit.getPlayerExact(player).sendMessage("Removed player "+ reciever +" from ignore list.");
         				chatManager.removeIgnore(sender.getName(), reciever);
-        				i++;
+        				
         				return true;
         			}
         			else{ continue;}
