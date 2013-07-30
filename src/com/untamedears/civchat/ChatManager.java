@@ -372,12 +372,10 @@ public class ChatManager {
     	recievers= ignoreList.get(player);
     	recievers.add(reciever);
     	ignoreList.put(player, recievers);
-    	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
     	}
     		else{
     			recievers.add(reciever);
     	    	ignoreList.put(player, recievers);
-    	    	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
     			}
     		}
     public List<String> getIgnoreList(String player){
@@ -386,8 +384,7 @@ public class ChatManager {
     public void removeIgnore(String player, String reciever){
     	
     	for (String x: ignoreList.get(player)){
-    		if (x!=reciever){
-    			Bukkit.getPlayerExact(player).sendMessage("Removed player "+ reciever +" from ignore list.");
+    		if (!x.equals(reciever)){
     			continue;
     		}
     		else{removeplayers.add(x);

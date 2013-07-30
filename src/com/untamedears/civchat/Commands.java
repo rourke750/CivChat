@@ -23,268 +23,39 @@ public class Commands implements CommandExecutor {
 
     private CivChat civ;
     private ChatManager chatManager;
-    private HashMap<String, String> replyList = new HashMap<>();
+    private HashMap<String, String> replyList = new HashMap<String, String>();
     
-    
-    private List<String> temp;
     public Commands(ChatManager chatManagerInstance, CivChat instance) {
         chatManager = chatManagerInstance;
         civ = instance;
     }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (label.equalsIgnoreCase("tell") || label.equalsIgnoreCase("msg") || label.equalsIgnoreCase("m") || label.equalsIgnoreCase("message")) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("You have to be a player to use that command!");
-                return true;
-            }
-
-            Player player = (Player) sender;
-
-            if (args.length < 1) {
-                if (chatManager.getChannel(player.getName()) == null) {
-                    player.sendMessage(ChatColor.RED + "Usage: /tell <player>");
-                } 
-                
-                		else {
-                    chatManager.removeChannel(player.getName());
-                    chatManager.removeGroupTalk(player.getName());
-                    player.sendMessage(ChatColor.RED + "You have moved to regular chat.");
-                }
-                return true;
-            } else if (args.length == 1) {
-                Player receiver = Bukkit.getPlayer(chatManager.playerCheck(args[0]));
-                if (receiver == null) {
-                    player.sendMessage(ChatColor.RED + "Error: Player is offline.");
-                    return true;
-                } else {
-                    if (chatManager.getGroupTalk(player.getName()) != null) {
-                        sender.sendMessage(ChatColor.RED + "You were removed from Group Chat.");
-                        chatManager.removeGroupTalk(player.getName());
-                    }
-                    chatManager.addChannel(player.getName(), receiver.getName());
-                    player.sendMessage(ChatColor.RED + "You are now chatting with " + receiver.getName() + ".");
-                    return true;
-                }
-            }
-
-            if (args.length > 1) {
-                Player receiver = Bukkit.getPlayer(chatManager.playerCheck(args[0]));
-
-                if (receiver == null) {
-                    sender.sendMessage(ChatColor.RED + "Error: Player is offline.");
-                    return true;
-                } else {
-                    StringBuilder message = new StringBuilder();
-
-                    for (int i = 1; i < args.length; i++) {
-                        message.append(args[i]);
-
-                        if (i < args.length - 1) {
-                            message.append(" ");
-                        }
-                    }
-                    chatManager.sendPrivateMessage(player, receiver, message.toString());
-
-                    chatManager.SaveChat(player, "P Message", "To " + receiver.getName() + ": " + message.toString());
-                    replyList.put(player.getName(), receiver.getName());
-                    return true;
-                }
-            }
-            return true;
+    	
+        if (command.getName().equals("tell")) {
+           return tell(sender, command, label, args);
+        }
+          
+        if (command.getName().equals("reply")) {
+            return reply(sender, command, label, args);
         }
 
-        if (label.equalsIgnoreCase("reply") || label.equalsIgnoreCase("r")) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("You have to be a player to use that command!");
-                return true;
-            }
-
-            String player = chatManager.playerCheck(sender.getName());
-            if (replyList.containsKey(player)) {
-                if (Bukkit.getPlayerExact(replyList.get(player)) == null) {
-                    sender.sendMessage(ChatColor.RED + "Error: Player is offline.");
-                    replyList.remove(player);
-                    return true;
-                } else {
-                    if (args.length > 0) {
-                        String receiver = replyList.get(player);
-                        if (chatManager.isIgnoring(player, receiver)) {
-                            sender.sendMessage(ChatColor.YELLOW + receiver + ChatColor.RED + " has muted you.");
-                            return true;
-                        }
-                        StringBuilder message = new StringBuilder();
-
-                        for (int i = 0; i < args.length; i++) {
-                            message.append(args[i]);
-
-                            if (i < args.length - 1) {
-                                message.append(" ");
-                            }
-                        }
-
-
-                        Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "To " + receiver + ": " + message);
-                        Bukkit.getPlayer(receiver).sendMessage(ChatColor.LIGHT_PURPLE + "From " + player + ": " + message);
-                        chatManager.SaveChat(Bukkit.getPlayerExact(player), "P Message", "To " + receiver + ": " + message.toString());
-                    } else {
-                        Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "You will message " + ChatColor.YELLOW + replyList.get(player));
-                    }
-                }
-            } else {
-                Bukkit.getPlayer(player).sendMessage(ChatColor.RED + "There is no one to reply to");
-            }
-            return true;
+        if (command.getName().equals("exit")) {
+           return exit(sender, command, label, args);
         }
 
-        if (label.equalsIgnoreCase("exit") || label.equalsIgnoreCase("e")) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("You have to be a player to use that command!");
-                return true;
-            }
-
-            Player player = (Player) sender;
-            if (chatManager.getChannel(player.getName()) != null) {
-                chatManager.removeChannel(player.getName());
-                player.sendMessage(ChatColor.RED + "You have been moved to regular chat.");
-                return true;
-            }
-            if (chatManager.getGroupTalk(player.getName()) != null) {
-                chatManager.removeGroupTalk(player.getName());
-                player.sendMessage(ChatColor.RED + "You have been moved to regular chat.");
-                return true;
-            } else {
-                player.sendMessage(ChatColor.RED + "You are not in a private chat or group chat");
-                return true;
-            }
+        if (command.getName().equals("civchat")) {
+            return civchat(sender, command, label, args);
+        }
+        if (command.getName().equals("groupchat")) {
+        	return groupchat(sender, command, label, args);
         }
 
-        if (label.equalsIgnoreCase("civchat")) {
-            if (sender.hasPermission("civchat.admin")) {
-                if (args.length < 1) {
-                    sender.sendMessage(ChatColor.RED + "Usage: /civchat <save/reload>");
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("save")) {
-                    sender.sendMessage("Saved configuration.");
-                    civ.saveConfig();
-
-                    return true;
-                }
-                if (args[0].equalsIgnoreCase("reload")) {
-                    sender.sendMessage("Reloaded configuration.");
-                    civ.reloadConfig();
-
-                    return true;
-                }
-            } else {
-                sender.sendMessage(ChatColor.RED + "You Do not have Permissions civchat.admin");
-            }
-        }
-        if (label.equalsIgnoreCase("groupchat") || label.equalsIgnoreCase("group") || label.equalsIgnoreCase("g")) {
-
-            Player player = (Player) sender;
-            if (args.length < 1) {
-                if (chatManager.isGroupTalk(player.getName())) {
-                    sender.sendMessage(ChatColor.RED + "You have been moved to normal chat.");
-                    chatManager.removeGroupTalk(player.getName());
-                    return true;
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Usage: /groupchat [group name] <message>");
-                    return true;
-                }
-            }
-            StringBuilder message = new StringBuilder();
-            Faction group = Citadel.getGroupManager().getGroup(args[0]);
-            if (group == null) {
-                sender.sendMessage(ChatColor.RED + "Not a valid group name");
-                return true;
-            }
-            if (!Citadel.getGroupManager().getGroup(group.getName()).isMember(sender.getName())
-                    && !Citadel.getGroupManager().getGroup(group.getName()).isModerator(sender.getName())
-                    && !Citadel.getGroupManager().getGroup(group.getName()).isFounder(sender.getName())) {
-                sender.sendMessage(ChatColor.RED + "You are not in that group.");
-                return true;
-            }
-
-            if (args.length == 1) {
-                if (chatManager.getGroupTalk(player.getName()) == null) {
-                    if (chatManager.getChannel(player.getName()) != null) {
-                        sender.sendMessage(ChatColor.RED + "You were removed from private chat.");
-                        chatManager.removeChannel(player.getName());
-                    }
-                    sender.sendMessage(ChatColor.RED + "You have moved to group chat in the group: " + group.getName() + ".");
-                    chatManager.addGroupTalk(sender.getName(), group);
-                    return true;
-                } else {
-                    sender.sendMessage(ChatColor.RED + "You have been switched to group: " + group.getName());
-                    chatManager.removeGroupTalk(player.getName());
-                    chatManager.addGroupTalk(player.getName(), group);
-                    return true;
-                }
-            }
-            if (args.length > 1) {
-
-                for (int i = 1; i < args.length; i++) {
-                    message.append(args[i]);
-
-                    if (i < args.length - 1) {
-                        message.append(" ");
-                    }
-                }
-                chatManager.GroupChat(group, message, sender.getName());
-
-                chatManager.SaveChat(player, "GroupChat", group.toString() + " -> " + message.toString());
-                return true;
-            }
-            return true;
+        if (command.getName().equals("ignore")) {
+            return ignore(sender, command, label, args);
         }
 
-        if (label.equalsIgnoreCase("ignore") || label.equalsIgnoreCase("ig")) {
-            if (!(sender instanceof Player)) {
-                sender.sendMessage("You have to be a player to use that command!");
-                return true;
-            }
-            if (args.length==0){
-            	sender.sendMessage("/ignore <player>");
-            	return true;
-            }
-            
-            else if (args.length>=1){
-            	String player=sender.getName();
-            	String reciever= args[0];
-            	if (Bukkit.getPlayer(reciever)==null){
-                	sender.sendMessage("That player is not online.");
-                	return true;
-                }
-            	else{
-            		int i=0;
-            		if (chatManager.getIgnoreList(player)==null){
-            			chatManager.setIgnoreList(player, reciever);
-            			return true;
-            		}
-            		else{
-            		for (String ignored:chatManager.getIgnoreList(player)){
-            			if (ignored.equals(reciever)){
-            				chatManager.removeIgnore(sender.getName(), reciever);
-            				i++;
-            				return true;
-            			}
-            			else{ continue;}
-            			
-            		}
-            		if (i==0){
-            		chatManager.setIgnoreList(player, reciever);
-            		return true;
-            		}
-            		}
-            	}
-            }
-           
-        }
-
-        if (label.equalsIgnoreCase("chat") || label.equalsIgnoreCase("chathelp") || label.equalsIgnoreCase("ch")) {
+        if (command.getName().equals("chat")) {
             String chatPrefix = ChatColor.DARK_RED + "===" + ChatColor.YELLOW + "CivChat" + ChatColor.DARK_RED + "=========================\n";
             if (args.length == 0) {
                 String help = "/chat range\n /chat groupchat\n /chat tell\n";
@@ -359,5 +130,263 @@ public class Commands implements CommandExecutor {
             }
         }
         return true;
+    }
+    
+    public Boolean tell(CommandSender sender, Command command, String label, String[] args){
+    	if (!(sender instanceof Player)) {
+            sender.sendMessage("You have to be a player to use that command!");
+            return true;
+        }
+
+        Player player = (Player) sender;
+
+        if (args.length < 1) {
+            if (chatManager.getChannel(player.getName()) == null) {
+                player.sendMessage(ChatColor.RED + "Usage: /tell <player>");
+            } 
+            
+            		else {
+                chatManager.removeChannel(player.getName());
+                chatManager.removeGroupTalk(player.getName());
+                player.sendMessage(ChatColor.RED + "You have moved to regular chat.");
+            }
+            return true;
+        } else if (args.length == 1) {
+            Player receiver = Bukkit.getPlayer(chatManager.playerCheck(args[0]));
+            if (receiver == null) {
+                player.sendMessage(ChatColor.RED + "Error: Player is offline.");
+                return true;
+            } else {
+                if (chatManager.getGroupTalk(player.getName()) != null) {
+                    sender.sendMessage(ChatColor.RED + "You were removed from Group Chat.");
+                    chatManager.removeGroupTalk(player.getName());
+                }
+                chatManager.addChannel(player.getName(), receiver.getName());
+                player.sendMessage(ChatColor.RED + "You are now chatting with " + receiver.getName() + ".");
+                return true;
+            }
+        }
+
+        if (args.length > 1) {
+            Player receiver = Bukkit.getPlayer(chatManager.playerCheck(args[0]));
+
+            if (receiver == null) {
+                sender.sendMessage(ChatColor.RED + "Error: Player is offline.");
+                return true;
+            } else {
+                StringBuilder message = new StringBuilder();
+
+                for (int i = 1; i < args.length; i++) {
+                    message.append(args[i]);
+
+                    if (i < args.length - 1) {
+                        message.append(" ");
+                    }
+                }
+                chatManager.sendPrivateMessage(player, receiver, message.toString());
+
+                chatManager.SaveChat(player, "P Message", "To " + receiver.getName() + ": " + message.toString());
+                replyList.put(player.getName(), receiver.getName());
+                return true;
+            }
+        }
+        return true;
+    
+    }
+    public Boolean reply(CommandSender sender, Command command, String label, String[] args){
+    	if (!(sender instanceof Player)) {
+            sender.sendMessage("You have to be a player to use that command!");
+            return true;
+        }
+
+        String player = chatManager.playerCheck(sender.getName());
+        if (replyList.containsKey(player)) {
+            if (Bukkit.getPlayerExact(replyList.get(player)) == null) {
+                sender.sendMessage(ChatColor.RED + "Error: Player is offline.");
+                replyList.remove(player);
+                return true;
+            } else {
+                if (args.length > 0) {
+                    String receiver = replyList.get(player);
+                    if (chatManager.isIgnoring(player, receiver)) {
+                        sender.sendMessage(ChatColor.YELLOW + receiver + ChatColor.RED + " has muted you.");
+                        return true;
+                    }
+                    StringBuilder message = new StringBuilder();
+
+                    for (int i = 0; i < args.length; i++) {
+                        message.append(args[i]);
+
+                        if (i < args.length - 1) {
+                            message.append(" ");
+                        }
+                    }
+
+
+                    Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "To " + receiver + ": " + message);
+                    Bukkit.getPlayer(receiver).sendMessage(ChatColor.LIGHT_PURPLE + "From " + player + ": " + message);
+                    chatManager.SaveChat(Bukkit.getPlayerExact(player), "P Message", "To " + receiver + ": " + message.toString());
+                } else {
+                    Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "You will message " + ChatColor.YELLOW + replyList.get(player));
+                }
+            }
+        } else {
+            Bukkit.getPlayer(player).sendMessage(ChatColor.RED + "There is no one to reply to");
+        }
+        return true;
+    }
+    public Boolean exit(CommandSender sender, Command command, String label, String[] args){
+    	 if (!(sender instanceof Player)) {
+             sender.sendMessage("You have to be a player to use that command!");
+             return true;
+         }
+
+         Player player = (Player) sender;
+         if (chatManager.getChannel(player.getName()) != null) {
+             chatManager.removeChannel(player.getName());
+             player.sendMessage(ChatColor.RED + "You have been moved to regular chat.");
+             return true;
+         }
+         if (chatManager.getGroupTalk(player.getName()) != null) {
+             chatManager.removeGroupTalk(player.getName());
+             player.sendMessage(ChatColor.RED + "You have been moved to regular chat.");
+             return true;
+         } else {
+             player.sendMessage(ChatColor.RED + "You are not in a private chat or group chat");
+             return true;
+         }
+    }
+    public Boolean civchat(CommandSender sender, Command command, String label, String[] args){
+    	if (sender.hasPermission("civchat.admin")) {
+            if (args.length < 1) {
+                sender.sendMessage(ChatColor.RED + "Usage: /civchat <save/reload>");
+                return true;
+            }
+
+            if (args[0].equalsIgnoreCase("save")) {
+                sender.sendMessage("Saved configuration.");
+                civ.saveConfig();
+
+                return true;
+            }
+            if (args[0].equalsIgnoreCase("reload")) {
+                sender.sendMessage("Reloaded configuration.");
+                civ.reloadConfig();
+
+                return true;
+            }
+        } else {
+            sender.sendMessage(ChatColor.RED + "You Do not have Permissions civchat.admin");
+            return true;
+        }
+    	return true;
+    }
+    public Boolean groupchat(CommandSender sender, Command command, String label, String[] args){
+    	if (!(sender instanceof Player)){
+    		sender.sendMessage("Must be a player to use that.");
+    		return true;
+    	}
+        Player player = (Player) sender;
+        if (args.length < 1) {
+            if (chatManager.isGroupTalk(player.getName())) {
+                sender.sendMessage(ChatColor.RED + "You have been moved to normal chat.");
+                chatManager.removeGroupTalk(player.getName());
+                return true;
+            } else {
+                sender.sendMessage(ChatColor.RED + "Usage: /groupchat [group name] <message>");
+                return true;
+            }
+        }
+        StringBuilder message = new StringBuilder();
+        Faction group = Citadel.getGroupManager().getGroup(args[0]);
+        if (group == null) {
+            sender.sendMessage(ChatColor.RED + "Not a valid group name");
+            return true;
+        }
+        if (!Citadel.getGroupManager().getGroup(group.getName()).isMember(sender.getName())
+                && !Citadel.getGroupManager().getGroup(group.getName()).isModerator(sender.getName())
+                && !Citadel.getGroupManager().getGroup(group.getName()).isFounder(sender.getName())) {
+            sender.sendMessage(ChatColor.RED + "You are not in that group.");
+            return true;
+        }
+
+        if (args.length == 1) {
+            if (chatManager.getGroupTalk(player.getName()) == null) {
+                if (chatManager.getChannel(player.getName()) != null) {
+                    sender.sendMessage(ChatColor.RED + "You were removed from private chat.");
+                    chatManager.removeChannel(player.getName());
+                }
+                sender.sendMessage(ChatColor.RED + "You have moved to group chat in the group: " + group.getName() + ".");
+                chatManager.addGroupTalk(sender.getName(), group);
+                return true;
+            } else {
+                sender.sendMessage(ChatColor.RED + "You have been switched to group: " + group.getName());
+                chatManager.removeGroupTalk(player.getName());
+                chatManager.addGroupTalk(player.getName(), group);
+                return true;
+            }
+        }
+        if (args.length > 1) {
+
+            for (int i = 1; i < args.length; i++) {
+                message.append(args[i]);
+
+                if (i < args.length - 1) {
+                    message.append(" ");
+                }
+            }
+            chatManager.GroupChat(group, message, sender.getName());
+
+            chatManager.SaveChat(player, "GroupChat", group.toString() + " -> " + message.toString());
+            return true;
+        }
+        return true;
+    }
+    public Boolean ignore(CommandSender sender, Command command, String label, String[] args){
+    	if (!(sender instanceof Player)) {
+            sender.sendMessage("You have to be a player to use that command!");
+            return true;
+        }
+        if (args.length==0){
+        	sender.sendMessage("/ignore <player>");
+        	return true;
+        }
+        
+        else if (args.length>=1){
+        	String player=sender.getName();
+        	String reciever= args[0];
+        	if (Bukkit.getPlayer(reciever)==null){
+            	sender.sendMessage("That player is not online.");
+            	return true;
+            }
+        	else{
+        		int i=0;
+        		if (chatManager.getIgnoreList(player)==null){
+        	    	Bukkit.getPlayerExact(player).sendMessage("Added player "+ reciever +" to ignore list.");
+        			chatManager.setIgnoreList(player, reciever);
+        			return true;
+        		}
+        		else{
+        		for (String ignored:chatManager.getIgnoreList(player)){
+        			if (ignored.equals(reciever)){
+        		    	Bukkit.getPlayerExact(player).sendMessage("Removed player "+ reciever +" from ignore list.");
+        				chatManager.removeIgnore(sender.getName(), reciever);
+        				i++;
+        				return true;
+        			}
+        			else{ continue;}
+        			
+        		}
+        		if (i==0){
+        		chatManager.setIgnoreList(player, reciever);
+        		return true;
+        		}
+        		}
+        	}
+        }
+        return true;
+    }
+    public void help(CommandSender sender, Command command, String label, String[] args){
+    	
     }
 }

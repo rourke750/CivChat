@@ -48,7 +48,7 @@ public class CivChat extends JavaPlugin implements Listener {
             File existing = new File(dir + date + ".txt");
             if (existing.exists()) {
                 FileWriter fw = new FileWriter(existing.getAbsoluteFile(), true);
-                writer = new BufferedWriter(fw);
+                writer = buffered(fw);
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Existing file", "");
             } else {
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Making a new file", "");
@@ -62,7 +62,7 @@ public class CivChat extends JavaPlugin implements Listener {
         	File existing = new File(dirign+".txt");
         	if (existing.exists()) {
                 FileWriter fw = new FileWriter(existing.getAbsoluteFile(), true);
-                writer = new BufferedWriter(fw);
+                writer = buffered(fw);
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Existing file", "");
                 ignored=existing;
                 chat.load(existing);
@@ -106,6 +106,9 @@ public class CivChat extends JavaPlugin implements Listener {
             Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    public BufferedWriter buffered(FileWriter fw){
+    	return new BufferedWriter(fw);
+    }
 
     private void fileManagement(String date, String dir) {
         File[] filtered = record.listFiles(new FilenameFilter() {
@@ -119,18 +122,22 @@ public class CivChat extends JavaPlugin implements Listener {
                 Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Zipping them up", "");
                 FileOutputStream fos = new FileOutputStream(dir + date + ".zip");
                 ZipOutputStream zos = new ZipOutputStream(fos);
-                for (File files : filtered) {
-                    ZipEntry ze = new ZipEntry(files.toString());
+                for (File file : filtered) {
+                    ZipEntry ze = new ZipEntry(file.toString());
                     zos.putNextEntry(ze);
                     zos.closeEntry();
-                    files.delete();
+                    file.delete();
                 }
                 zos.close();
             } catch (Exception e) {
-                ;
+            	Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, null, e);
+            	return;
             }
         }
-        File[] zipList = record.listFiles(new FilenameFilter() {
+        zipFile();
+    }
+    public void zipFile(){
+    	File[] zipList = record.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.toLowerCase().endsWith(".zip");
             }
