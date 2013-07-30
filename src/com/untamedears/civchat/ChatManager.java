@@ -400,7 +400,7 @@ public class ChatManager {
 			String parts[] =line.split(" ");
 			String owner= parts[0];
 			List<String> participants= new ArrayList<>();;
-			for(int x=1; x<=parts.length; x++){
+			for(int x=1; x<parts.length; x++){
 				participants.add(parts[x]);
 			}
 			ignoreList.put(owner, participants);		
