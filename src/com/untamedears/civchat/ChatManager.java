@@ -34,8 +34,8 @@ import java.util.logging.Logger;
  * Coded by ibbignerd and Rourke750
  */
 public class ChatManager {
-    
-    private CivChat plugin = null;
+    private FileConfiguration config;
+    private CivChat plugin;
     public double chatmax;
     public boolean garbleEnabled;
     private Random random = new Random();
@@ -67,33 +67,32 @@ public class ChatManager {
     private HashMap<String, List<String>> ignoreList = new HashMap<String, List<String>>();
    
    
-    public ChatManager(CivChat pluginInstance) {
-    	FileConfiguration config;
+    public ChatManager(CivChat pluginInstance, FileConfiguration config) {
         plugin = pluginInstance;
-        config = plugin.getConfig();
-        chatmax = config.getDouble("chat.maxrange", 1000);
-        garblevar = config.getInt("chat.garblevariation", 5);
-        yvar = config.getBoolean("chat.yvariation.enabled", true);
-        ynogarb = config.getInt("chat.yvariation.noGarbLevel", 70);
-        shout = config.getBoolean("chat.shout.enabled", true);
-        shoutChar = config.getString("chat.shout.char", "!");
-        shoutDist = config.getInt("chat.shout.distanceAdded", 100);
-        shoutColor = config.getString("chat.shout.color", "WHITE");
-        shoutHunger = config.getInt("chat.shout.hungerreduced", 4);
-        shoutCool = config.getLong("chat.shout.cooldown", 10) * 1000;
-        whisper = config.getBoolean("chat.whisper.enabled", true);
-        whisperChar = config.getString("chat.whisper.char", "#");
-        whisperDist = config.getInt("chat.whisper.distance", 50);
-        whisperColor = config.getString("chat.whisper.color", "ITALIC");
-        defaultcolor = config.getString("chat.defaultcolor", "WHITE");
-        greyscale = config.getBoolean("chat.greyscale", true);
-        garbleEnabled = config.getBoolean("chat.range.garbleEnabled", false);
-        chatDist1 = chatmax - config.getDouble("chat.range.1.distance", 100);
-        garble1 = config.getInt("chat.range.1.garble", 0);
-        color1 = config.getString("chat.range.1.color", "GRAY");
-        chatDist2 = chatmax - config.getDouble("chat.range.2.distance", 50);
-        garble2 = config.getInt("chat.range.2.garble", 0);
-        color2 = config.getString("color.range.2.color", "DARK_GRAY");
+        this.config = config;
+        chatmax = config.getDouble("chat.range.maxrange");
+        garbleEnabled = config.getBoolean("chat.range.garbleEnabled");
+        chatDist1 = chatmax - config.getDouble("chat.range.1.distance");
+        garble1 = config.getInt("chat.range.1.garble");
+        chatDist2 = chatmax - config.getDouble("chat.range.2.distance");
+        garble2 = config.getInt("chat.range.2.garble");
+        garblevar = config.getInt("chat.garblevariation");
+        greyscale = config.getBoolean("chat.greyscale");
+        defaultcolor = config.getString("chat.defaultcolor");
+        color1 = config.getString("chat.range.1.color");
+        color2 = config.getString("chat.range.2.color");
+        yvar = config.getBoolean("chat.yvariation.enabled");
+        ynogarb = config.getInt("chat.yvariation.noGarbLevel");
+        shout = config.getBoolean("chat.shout.enabled");
+        shoutChar = config.getString("chat.shout.char");
+        shoutDist = config.getInt("chat.shout.distanceAdded");
+        whisper = config.getBoolean("chat.whisper.enabled");
+        whisperChar = config.getString("chat.whisper.char");
+        whisperDist = config.getInt("chat.whisper.distance");
+        whisperColor = config.getString("chat.whisper.color");
+        shoutCool = config.getLong("chat.shout.cooldown") * 1000;
+        shoutHunger = config.getInt("chat.shout.hungerreduced");
+        shoutColor = config.getString("chat.shout.color");
     }
 
     public void sendPrivateMessage(Player from, Player to, String message) {
@@ -117,7 +116,6 @@ public class ChatManager {
         double chatrange = chatmax;
         double added = 0;
         boolean shouting = false;
-
         if (yvar && !message.startsWith(whisperChar) && y > ynogarb) {
             added = Math.pow(1.1, (y - ynogarb) / 14) * (y - ynogarb);
             chatrange += added;
@@ -411,6 +409,7 @@ public class ChatManager {
 			}
 			ignoreList.put(owner, participants);		
 		}
+		br.close();
 		fis.close();
 	}
     public void save(File file) throws IOException{

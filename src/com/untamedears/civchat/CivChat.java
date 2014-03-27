@@ -24,19 +24,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class CivChat extends JavaPlugin implements Listener {
 
     public PluginDescriptionFile pdf = this.getDescription();
-    private ChatManager chat = null;
-    private ChatListener cl = null;
-    private FileConfiguration config = null;
+    private static ChatManager chat;
+    private ChatListener cl;
+    private FileConfiguration config;
     public File record = null;
     public File ignored;
     public BufferedWriter writer;
     public BufferedWriter writ;
 
     public void onEnable() {
-        config = getConfig();
+    	FileConfiguration con = getConfig();
+    	config= con;
         initConfig();
-        this.saveConfig();
-        chat = new ChatManager(this);
+        chat = new ChatManager(this, con);
         String date = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String dir = this.getDataFolder() + File.separator + "ChatLogs" + File.separator;
         String dirign= this.getDataFolder()+ File.separator+ "ignored"+ File.separator;        
@@ -257,9 +257,13 @@ public class CivChat extends JavaPlugin implements Listener {
         if (!config.contains("chat.range.maxrange")) {
             config.set("chat.range.maxrange", 1000);
         }
+        saveConfig();
     }
 
     private void registerEvents() {
         getServer().getPluginManager().registerEvents(cl, this);
+    }
+    public static ChatManager getChatManager(){
+    	return chat;
     }
 }

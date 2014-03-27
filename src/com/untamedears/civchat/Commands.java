@@ -139,7 +139,7 @@ public class Commands implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-
+        
         if (args.length < 1) {
             if (chatManager.getChannel(player.getName()) == null) {
                 player.sendMessage(ChatColor.RED + "Usage: /tell <player>");
