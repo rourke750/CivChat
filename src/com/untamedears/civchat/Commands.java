@@ -163,6 +163,7 @@ public class Commands implements CommandExecutor {
                 }
                 chatManager.addChannel(player.getName(), receiver.getName());
                 player.sendMessage(ChatColor.RED + "You are now chatting with " + receiver.getName() + ".");
+                replyList.put(receiver.getName(), player.getName());
                 return true;
             }
         }
@@ -186,7 +187,7 @@ public class Commands implements CommandExecutor {
                 chatManager.sendPrivateMessage(player, receiver, message.toString());
 
                 chatManager.SaveChat(player, "P Message", "To " + receiver.getName() + ": " + message.toString());
-                replyList.put(player.getName(), receiver.getName());
+                replyList.put(receiver.getName(), player.getName());
                 return true;
             }
         }

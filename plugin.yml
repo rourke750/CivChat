@@ -1,6 +1,6 @@
 name: CivChat
 main: com.untamedears.civchat.CivChat
-version: 1.14
+version: 1.17
 authors: [Rourke750, ibbignerd]
 commands:
    tell:

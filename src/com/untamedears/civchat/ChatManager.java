@@ -34,395 +34,414 @@ import java.util.logging.Logger;
  * Coded by ibbignerd and Rourke750
  */
 public class ChatManager {
-    private FileConfiguration config;
-    private CivChat plugin;
-    public double chatmax;
-    public boolean garbleEnabled;
-    private Random random = new Random();
-    private double chatDist1;
-    private int garble1;
-    private double chatDist2;
-    private int garble2;
-    private int garblevar;
-    private boolean greyscale;
-    private String defaultcolor;
-    private String color1;
-    private String color2;
-    public boolean yvar;
-    private int ynogarb;
-    public boolean shout;
-    public String shoutChar;
-    public int shoutDist;
-    public boolean whisper;
-    public String whisperChar;
-    public int whisperDist;
-    private String whisperColor;
-    private HashMap<String, Faction> groupchat = new HashMap<String, Faction>();
-    private HashMap<String, String> channels = new HashMap<String, String>();
-    private String replacement = "abcdefghijklmnopqrstuvwxyz";
-    private HashMap<Player, Long> shoutList = new HashMap<Player, Long>();
-    public long shoutCool;
-    private int shoutHunger;
-    private String shoutColor;
-    private HashMap<String, List<String>> ignoreList = new HashMap<String, List<String>>();
-   
-   
-    public ChatManager(CivChat pluginInstance, FileConfiguration config) {
-        plugin = pluginInstance;
-        this.config = config;
-        chatmax = config.getDouble("chat.range.maxrange");
-        garbleEnabled = config.getBoolean("chat.range.garbleEnabled");
-        chatDist1 = chatmax - config.getDouble("chat.range.1.distance");
-        garble1 = config.getInt("chat.range.1.garble");
-        chatDist2 = chatmax - config.getDouble("chat.range.2.distance");
-        garble2 = config.getInt("chat.range.2.garble");
-        garblevar = config.getInt("chat.garblevariation");
-        greyscale = config.getBoolean("chat.greyscale");
-        defaultcolor = config.getString("chat.defaultcolor");
-        color1 = config.getString("chat.range.1.color");
-        color2 = config.getString("chat.range.2.color");
-        yvar = config.getBoolean("chat.yvariation.enabled");
-        ynogarb = config.getInt("chat.yvariation.noGarbLevel");
-        shout = config.getBoolean("chat.shout.enabled");
-        shoutChar = config.getString("chat.shout.char");
-        shoutDist = config.getInt("chat.shout.distanceAdded");
-        whisper = config.getBoolean("chat.whisper.enabled");
-        whisperChar = config.getString("chat.whisper.char");
-        whisperDist = config.getInt("chat.whisper.distance");
-        whisperColor = config.getString("chat.whisper.color");
-        shoutCool = config.getLong("chat.shout.cooldown") * 1000;
-        shoutHunger = config.getInt("chat.shout.hungerreduced");
-        shoutColor = config.getString("chat.shout.color");
-    }
+	private FileConfiguration config;
+	private CivChat plugin;
+	public double chatmax;
+	public boolean garbleEnabled;
+	private Random random = new Random();
+	private double chatDist1;
+	private int garble1;
+	private double chatDist2;
+	private int garble2;
+	private int garblevar;
+	private boolean greyscale;
+	private String defaultcolor;
+	private String color1;
+	private String color2;
+	public boolean yvar;
+	private int ynogarb;
+	public boolean shout;
+	public String shoutChar;
+	public int shoutDist;
+	public boolean whisper;
+	public String whisperChar;
+	public int whisperDist;
+	private String whisperColor;
+	private HashMap<String, Faction> groupchat = new HashMap<String, Faction>();
+	private HashMap<String, String> channels = new HashMap<String, String>();
+	private String replacement = "abcdefghijklmnopqrstuvwxyz";
+	private HashMap<Player, Long> shoutList = new HashMap<Player, Long>();
+	public long shoutCool;
+	private int shoutHunger;
+	private String shoutColor;
+	private HashMap<String, List<String>> ignoreList = new HashMap<String, List<String>>();
 
-    public void sendPrivateMessage(Player from, Player to, String message) {
-        if (isIgnoring(to.getName(), from.getName())) {
-            from.sendMessage(ChatColor.YELLOW + to.getName() + ChatColor.RED + " has muted you.");
-            return;
-        }
-        from.sendMessage(ChatColor.LIGHT_PURPLE + "To " + to.getName() + ": " + message);
-        to.sendMessage(ChatColor.LIGHT_PURPLE + "From " + from.getName() + ": " + message);
-    }
+	public ChatManager(CivChat pluginInstance, FileConfiguration config) {
+		plugin = pluginInstance;
+		this.config = config;
+		chatmax = config.getDouble("chat.range.maxrange");
+		garbleEnabled = config.getBoolean("chat.range.garbleEnabled");
+		chatDist1 = chatmax - config.getDouble("chat.range.1.distance");
+		garble1 = config.getInt("chat.range.1.garble");
+		chatDist2 = chatmax - config.getDouble("chat.range.2.distance");
+		garble2 = config.getInt("chat.range.2.garble");
+		garblevar = config.getInt("chat.garblevariation");
+		greyscale = config.getBoolean("chat.greyscale");
+		defaultcolor = config.getString("chat.defaultcolor");
+		color1 = config.getString("chat.range.1.color");
+		color2 = config.getString("chat.range.2.color");
+		yvar = config.getBoolean("chat.yvariation.enabled");
+		ynogarb = config.getInt("chat.yvariation.noGarbLevel");
+		shout = config.getBoolean("chat.shout.enabled");
+		shoutChar = config.getString("chat.shout.char");
+		shoutDist = config.getInt("chat.shout.distanceAdded");
+		whisper = config.getBoolean("chat.whisper.enabled");
+		whisperChar = config.getString("chat.whisper.char");
+		whisperDist = config.getInt("chat.whisper.distance");
+		whisperColor = config.getString("chat.whisper.color");
+		shoutCool = config.getLong("chat.shout.cooldown") * 1000;
+		shoutHunger = config.getInt("chat.shout.hungerreduced");
+		shoutColor = config.getString("chat.shout.color");
+	}
 
-    public void sendPlayerBroadcast(Player player, String message, Set<Player> receivers) {
-    	SaveChat(player, "Broadcast", message);
+	public void sendPrivateMessage(Player from, Player to, String message) {
+		if (isIgnoring(to.getName(), from.getName())) {
+			from.sendMessage(ChatColor.YELLOW + to.getName() + ChatColor.RED
+					+ " has muted you.");
+			return;
+		}
+		from.sendMessage(ChatColor.LIGHT_PURPLE + "To " + to.getName() + ": "
+				+ message);
+		to.sendMessage(ChatColor.LIGHT_PURPLE + "From " + from.getName() + ": "
+				+ message);
+	}
 
-        Location location = player.getLocation();
-        int x = location.getBlockX();
-        int y = location.getBlockY();
-        int z = location.getBlockZ();
-        double chatdist = 0;
-        boolean whispering = false;
-        double chatrange = chatmax;
-        double added = 0;
-        boolean shouting = false;
-        if (yvar && !message.startsWith(whisperChar) && y > ynogarb) {
-            added = Math.pow(1.1, (y - ynogarb) / 14) * (y - ynogarb);
-            chatrange += added;
-        }
+	public void sendPlayerBroadcast(Player player, String message,
+			Set<Player> receivers) {
+		SaveChat(player, "Broadcast", message);
 
-        if (shout && message.startsWith(shoutChar)) {
-            if (shoutList.get(player) != null && System.currentTimeMillis() - shoutList.get(player) >= shoutCool) {
-                shoutList.remove(player);
-            }
+		Location location = player.getLocation();
+		int x = location.getBlockX();
+		int y = location.getBlockY();
+		int z = location.getBlockZ();
+		double chatdist = 0;
+		boolean whispering = false;
+		double chatrange = chatmax;
+		double added = 0;
+		boolean shouting = false;
+		if (yvar && !message.startsWith(whisperChar) && y > ynogarb) {
+			added = Math.pow(1.1, (y - ynogarb) / 14) * (y - ynogarb);
+			chatrange += added;
+		}
 
-            if (shoutList.get(player) == null) {
-                Float sat = player.getSaturation();
-                if (sat > 0) {
-                    sat -= shoutHunger;
-                    if (sat <= 0) {
-                        player.setSaturation(0);
-                        player.setFoodLevel(player.getFoodLevel() - Integer.parseInt(sat + ""));
-                    } else {
-                        player.setSaturation(player.getSaturation() - sat);
-                    }
-                } else {
-                    int food = player.getFoodLevel() - shoutHunger;
-                    if (food < 0) {
-                        food = 0;
-                    }
-                    player.setFoodLevel(food);
-                }
-                chatrange += shoutDist;
-                shoutList.put(player, System.currentTimeMillis());
-                shouting = true;
-            } else {
-                player.sendMessage(ChatColor.RED + "Shout under cooldown, please wait "
-                        + ((((shoutList.get(player) - System.currentTimeMillis()) + shoutCool) / 1000) + 1) + " seconds");
-            }
-        }
+		if (shout && message.startsWith(shoutChar)) {
+			if (shoutList.get(player) != null
+					&& System.currentTimeMillis() - shoutList.get(player) >= shoutCool) {
+				shoutList.remove(player);
+			}
 
-        for (Player receiver : receivers) {
-        	if(isIgnoring(receiver.getName(), player.getName())){
-        		continue;
-        	}
-        	else{
-            double garble = 0;
-            String chat = message;
-            double randGarble = 0;
-            ChatColor color = ChatColor.valueOf(defaultcolor);
+			if (shoutList.get(player) == null) {
+				Float sat = player.getSaturation();
+				if (sat > 0) {
+					sat -= shoutHunger;
+					if (sat <= 0) {
+						player.setSaturation(0);
+						player.setFoodLevel(player.getFoodLevel()
+								- Integer.parseInt(sat + ""));
+					} else {
+						player.setSaturation(player.getSaturation() - sat);
+					}
+				} else {
+					int food = player.getFoodLevel() - shoutHunger;
+					if (food < 0) {
+						food = 0;
+					}
+					player.setFoodLevel(food);
+				}
+				chatrange += shoutDist;
+				shoutList.put(player, System.currentTimeMillis());
+				shouting = true;
+			} else {
+				player.sendMessage(ChatColor.RED
+						+ "Shout under cooldown, please wait "
+						+ ((((shoutList.get(player) - System
+								.currentTimeMillis()) + shoutCool) / 1000) + 1)
+						+ " seconds");
+			}
+		}
 
-            int rx = receiver.getLocation().getBlockX();
-            int ry = receiver.getLocation().getBlockY();
-            int rz = receiver.getLocation().getBlockZ();
+		for (Player receiver : receivers) {
+			double garble = 0;
+			String chat = message;
+			double randGarble = 0;
+			ChatColor color = ChatColor.valueOf(defaultcolor);
 
-            chatdist = Math.sqrt(Math.pow(x - rx, 2) + Math.pow(y - ry, 2) + Math.pow(z - rz, 2));
+			int rx = receiver.getLocation().getBlockX();
+			int ry = receiver.getLocation().getBlockY();
+			int rz = receiver.getLocation().getBlockZ();
 
-            whispering = whisper && message.startsWith(whisperChar);
-            if (whispering) {
-                chatrange = whisperDist;
-                color = ChatColor.valueOf(whisperColor);
-                randGarble = 0;
-            } else if (chatdist <= chatDist2 && chatdist > chatDist1) {
-                if (garbleEnabled) {
-                    randGarble = random.nextInt(garblevar) + garble1;
-                }
-                if (greyscale) {
-                    color = ChatColor.valueOf(color1);
-                }
-            } else if (chatdist <= chatrange && chatdist > chatDist2) {
-                if (garbleEnabled) {
-                    randGarble = random.nextInt(garblevar) + garble2;
-                }
-                if (greyscale) {
-                    color = ChatColor.valueOf(color2);
-                }
-            }
-            if (garbleEnabled) {
-                garble = chat.length() * (randGarble / 100.0F);
-                chat = shuffle(chat, garble);
-            } else {
-                chat = message;
-            }
-            if (chatdist <= chatrange) {
-                if (whispering) {
-                    receiver.sendMessage(color + player.getDisplayName() + " whispered: " + chat.substring(1));
-                } else if (shouting) {
-                    color = ChatColor.valueOf(shoutColor);
-                    receiver.sendMessage(color + player.getDisplayName() + " shouted: " + chat.substring(1));
-                } else {
+			chatdist = Math.sqrt(Math.pow(x - rx, 2) + Math.pow(y - ry, 2)
+					+ Math.pow(z - rz, 2));
 
-                	if (receiver.getWorld()!=player.getWorld()){
-                		continue;
-                	}
-                	else{
-                    receiver.sendMessage(color + player.getDisplayName() + ": " + chat);
-                	}
-                }
-            }
-        }}
-    }
+			whispering = whisper && message.startsWith(whisperChar);
+			if (whispering) {
+				chatrange = whisperDist;
+				color = ChatColor.valueOf(whisperColor);
+				randGarble = 0;
+			} else if (chatdist <= chatDist2 && chatdist > chatDist1) {
+				if (garbleEnabled) {
+					randGarble = random.nextInt(garblevar) + garble1;
+				}
+				if (greyscale) {
+					color = ChatColor.valueOf(color1);
+				}
+			} else if (chatdist <= chatrange && chatdist > chatDist2) {
+				if (garbleEnabled) {
+					randGarble = random.nextInt(garblevar) + garble2;
+				}
+				if (greyscale) {
+					color = ChatColor.valueOf(color2);
+				}
+			}
+			if (garbleEnabled) {
+				garble = chat.length() * (randGarble / 100.0F);
+				chat = shuffle(chat, garble);
+			} else {
+				chat = message;
+			}
+			if (chatdist <= chatrange) {
+				if (whispering) {
+					receiver.sendMessage(color + player.getDisplayName()
+							+ " whispered: " + chat.substring(1));
+				} else if (shouting) {
+					color = ChatColor.valueOf(shoutColor);
+					receiver.sendMessage(color + player.getDisplayName()
+							+ " shouted: " + chat.substring(1));
+				} else {
 
-    private String shuffle(String input, double a) {
-        int times = (int) a;
-        StringBuilder sb = new StringBuilder(input);
-        for (int i = 0; i < times; i++) {
-            int rand = random.nextInt(input.length());
-            int replaceRand = random.nextInt(replacement.length());
-            switch (sb.charAt(rand)) {
-                case ' ':
-                case '.':
-                case ',':
-                case '!':
-                    continue;
-            }
-            sb.setCharAt(rand, replacement.charAt(replaceRand));
-        }
-        String output = new String(sb);
-        return output;
-    }
+					if (receiver.getWorld() != player.getWorld()) {
+						continue;
+					} else {
+						receiver.sendMessage(color + player.getDisplayName()
+								+ ": " + chat);
+					}
+				}
+			}
+		}
+	}
 
-    public void addChannel(String player1, String player2) {
-        if (getChannel(player1) != null) {
-            channels.put(player1, player2);
-        } else {
-            channels.put(player1, player2);
-        }
-    }
+	private String shuffle(String input, double a) {
+		int times = (int) a;
+		StringBuilder sb = new StringBuilder(input);
+		for (int i = 0; i < times; i++) {
+			int rand = random.nextInt(input.length());
+			int replaceRand = random.nextInt(replacement.length());
+			switch (sb.charAt(rand)) {
+			case ' ':
+			case '.':
+			case ',':
+			case '!':
+				continue;
+			}
+			sb.setCharAt(rand, replacement.charAt(replaceRand));
+		}
+		String output = new String(sb);
+		return output;
+	}
 
-    public String getChannel(String player) {
-    	return channels.get(player);
-    }
+	public void addChannel(String player1, String player2) {
+		if (getChannel(player1) != null) {
+			channels.put(player1, player2);
+		} else {
+			channels.put(player1, player2);
+		}
+	}
 
-    public void removeChannel(String player) {
-        if (channels.containsKey(player)) {
-            channels.remove(player);
-        }
-    }
+	public String getChannel(String player) {
+		return channels.get(player);
+	}
 
-    public void GroupChat(Faction group, StringBuilder message, String player) {
-        Player player1 = Bukkit.getPlayer(player);
-        Collection<Player> players = Citadel.getMemberManager().getOnlinePlayers();
-        String chat = message.toString();
-        player1.sendMessage(ChatColor.DARK_AQUA + "To group: " + group.getName() + ": " + chat);
-        for (Player reciever : players) {
-            if (!group.isMember(reciever.getName())
-                    && !group.isFounder(reciever.getName())
-                    && !group.isModerator(reciever.getName())==true) {
-                continue;
-            } 
-            
-            
-            	if (isIgnoring(reciever.getName(), player)){
-                	continue;
-                }
-                if (reciever.getName().equals(player1.getName())) {
-                    continue;
-                } else {
-                    reciever.sendMessage(ChatColor.DARK_AQUA + "Group " + group.getName() + ", from " + player + ": " + chat);
-                }
-            
-        }
+	public void removeChannel(String player) {
+		if (channels.containsKey(player)) {
+			channels.remove(player);
+		}
+	}
 
-    }
+	public void GroupChat(Faction group, StringBuilder message, String player) {
+		Player player1 = Bukkit.getPlayer(player);
+		Collection<Player> players = Citadel.getMemberManager()
+				.getOnlinePlayers();
+		String chat = message.toString();
+		player1.sendMessage(ChatColor.DARK_AQUA + "To group: "
+				+ group.getName() + ": " + chat);
+		for (Player reciever : players) {
+			if (!group.isMember(reciever.getName())
+					&& !group.isFounder(reciever.getName())
+					&& !group.isModerator(reciever.getName()) == true) {
+				continue;
+			}
 
-    public void PrivateGroupChat(Faction group, String message, String player) {
-        Player player1 = Bukkit.getPlayer(player);
-        Collection<Player> players = Citadel.getMemberManager().getOnlinePlayers();
-        String chat = message;
-        player1.sendMessage(ChatColor.DARK_AQUA + "To group: " + group.getName() + ": " + chat);
-        for (Player reciever : players) {
-            if (!group.isMember(reciever.getName())
-                    && !group.isFounder(reciever.getName())
-                    && !group.isModerator(reciever.getName())) {
-                continue;
-            }
-            
-            
-            	if (isIgnoring(reciever.getName(), player) == true){
-                	continue;
-                }
-                if (reciever.getName().equals(player1.getName())) {
-                    continue;
-                }
-               
-                reciever.sendMessage(ChatColor.DARK_AQUA + "Group " + group.getName() + ", from " + player + ": " + chat);
-            
-        }
-    }
+			if (isIgnoring(reciever.getName(), player)) {
+				continue;
+			}
+			if (reciever.getName().equals(player1.getName())) {
+				continue;
+			} else {
+				reciever.sendMessage(ChatColor.DARK_AQUA + "Group "
+						+ group.getName() + ", from " + player + ": " + chat);
+			}
 
-    public void addGroupTalk(String player, Faction group) {
-        if (getGroupTalk(player) != null) {
-            groupchat.put(player, group);
-        } else {
-            groupchat.put(player, group);
-        }
+		}
 
-    }
+	}
 
-    public Faction getGroupTalk(String player) {
-            return groupchat.get(player);
-    }
+	public void PrivateGroupChat(Faction group, String message, String player) {
+		Player player1 = Bukkit.getPlayer(player);
+		Collection<Player> players = Citadel.getMemberManager()
+				.getOnlinePlayers();
+		String chat = message;
+		player1.sendMessage(ChatColor.DARK_AQUA + "To group: "
+				+ group.getName() + ": " + chat);
+		for (Player reciever : players) {
+			if (!group.isMember(reciever.getName())
+					&& !group.isFounder(reciever.getName())
+					&& !group.isModerator(reciever.getName())) {
+				continue;
+			}
 
-    public boolean isGroupTalk(String player) {
-        if (groupchat.containsKey(player)) {
-            return true;
-        }
-        return false;
-    }
+			if (isIgnoring(reciever.getName(), player) == true) {
+				continue;
+			}
+			if (reciever.getName().equals(player1.getName())) {
+				continue;
+			}
 
-    public void removeGroupTalk(String player) {
-        if (groupchat.containsKey(player)) {
-            groupchat.remove(player);
-        }
-    }
+			reciever.sendMessage(ChatColor.DARK_AQUA + "Group "
+					+ group.getName() + ", from " + player + ": " + chat);
 
-    public void SaveChat(Player sender, String type, String message) {
-        String date = new SimpleDateFormat("dd-MM HH:mm:ss").format(new Date());
-        String name = sender.getName();
-        String loc = (int) sender.getLocation().getX() + ", " + (int) sender.getLocation().getY() + ", " + (int) sender.getLocation().getZ();
-        String textLine = "[" + date + "] [" + loc + "] [" + type + "] [" + name + "] " + message;
+		}
+	}
 
-        try {
-            plugin.writer.write(textLine);
-            plugin.writer.newLine();
-            plugin.writer.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+	public void addGroupTalk(String player, Faction group) {
+		if (getGroupTalk(player) != null) {
+			groupchat.put(player, group);
+		} else {
+			groupchat.put(player, group);
+		}
 
-    public String playerCheck(String player) {
-        Player[] onlineList = Bukkit.getOnlinePlayers();
-        for (Player check : onlineList) {
-            if (check.getName().startsWith(player)) {
-                return check.getName();
-            }
-        }
-        return player;
-    }
+	}
 
-    public boolean isIgnoring(String muter, String muted) {
-    	List<String> ignorelist;
-        try {
-            if (ignoreList.containsKey(muter)) {
-            	ignorelist = ignoreList.get(muter);
-                if (ignorelist.contains(muted)) {
-                    return true;
-                }
-            }
-            else{
-            	return false;
-            }
-        } catch (NullPointerException e) {
-            return false;
-        }
+	public Faction getGroupTalk(String player) {
+		return groupchat.get(player);
+	}
 
-        return false;
-    }
-    public void setIgnoreList(String player, String reciever){
-    	List<String> recievers=new ArrayList<String>();
-    		if (ignoreList.get(player)!=null){
-    	recievers= ignoreList.get(player);
-    	recievers.add(reciever);
-    	ignoreList.put(player, recievers);
-    	}
-    		else{
-    			recievers.add(reciever);
-    	    	ignoreList.put(player, recievers);
-    			}
-    		}
-    public List<String> getIgnoreList(String player){
-    	return ignoreList.get(player);
-    }
-    public void removeIgnore(String player, String reciever){
-    	 List<String> removeplayers= new ArrayList<String>();
-    	for (String x: ignoreList.get(player)){
-    		if (x.equals(reciever)){
-    			continue;
-    		}
-    		else{removeplayers.add(x);
-    		}
-    	}
-    	ignoreList.put(player, removeplayers);
-    }
-    public void load(File file) throws IOException{
+	public boolean isGroupTalk(String player) {
+		if (groupchat.containsKey(player)) {
+			return true;
+		}
+		return false;
+	}
+
+	public void removeGroupTalk(String player) {
+		if (groupchat.containsKey(player)) {
+			groupchat.remove(player);
+		}
+	}
+
+	public void SaveChat(Player sender, String type, String message) {
+		String date = new SimpleDateFormat("dd-MM HH:mm:ss").format(new Date());
+		String name = sender.getName();
+		String loc = (int) sender.getLocation().getX() + ", "
+				+ (int) sender.getLocation().getY() + ", "
+				+ (int) sender.getLocation().getZ();
+		String textLine = "[" + date + "] [" + loc + "] [" + type + "] ["
+				+ name + "] " + message;
+
+		try {
+			plugin.writer.write(textLine);
+			plugin.writer.newLine();
+			plugin.writer.flush();
+		} catch (IOException ex) {
+			Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, null,
+					ex);
+		}
+	}
+
+	public String playerCheck(String player) {
+		Player[] onlineList = Bukkit.getOnlinePlayers();
+		for (Player check : onlineList) {
+			if (check.getName().startsWith(player)) {
+				return check.getName();
+			}
+		}
+		return player;
+	}
+
+	public boolean isIgnoring(String muter, String muted) {
+		List<String> ignorelist;
+		try {
+			if (ignoreList.containsKey(muter)) {
+				ignorelist = ignoreList.get(muter);
+				if (ignorelist.contains(muted)) {
+					return true;
+				}
+			} else {
+				return false;
+			}
+		} catch (NullPointerException e) {
+			return false;
+		}
+
+		return false;
+	}
+
+	public void setIgnoreList(String player, String reciever) {
+		List<String> recievers = new ArrayList<String>();
+		if (ignoreList.get(player) != null) {
+			recievers = ignoreList.get(player);
+			recievers.add(reciever);
+			ignoreList.put(player, recievers);
+		} else {
+			recievers.add(reciever);
+			ignoreList.put(player, recievers);
+		}
+	}
+
+	public List<String> getIgnoreList(String player) {
+		return ignoreList.get(player);
+	}
+
+	public void removeIgnore(String player, String reciever) {
+		List<String> removeplayers = new ArrayList<String>();
+		for (String x : ignoreList.get(player)) {
+			if (x.equals(reciever)) {
+				continue;
+			} else {
+				removeplayers.add(x);
+			}
+		}
+		ignoreList.put(player, removeplayers);
+	}
+
+	public void load(File file) throws IOException {
 		FileInputStream fis = new FileInputStream(file);
 		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 		String line;
-		while ((line=br.readLine()) != null){
-			String parts[] =line.split(" ");
-			String owner= parts[0];
-			List<String> participants= new ArrayList<>();;
-			for(int x=1; x<parts.length; x++){
+		while ((line = br.readLine()) != null) {
+			String parts[] = line.split(" ");
+			String owner = parts[0];
+			List<String> participants = new ArrayList<>();
+			;
+			for (int x = 1; x < parts.length; x++) {
 				participants.add(parts[x]);
 			}
-			ignoreList.put(owner, participants);		
+			ignoreList.put(owner, participants);
 		}
 		br.close();
 		fis.close();
 	}
-    public void save(File file) throws IOException{
+
+	public void save(File file) throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
 		BufferedWriter br = new BufferedWriter(new OutputStreamWriter(fos));
-		Set<String> main= ignoreList.keySet();
-		for (String z: main){
+		Set<String> main = ignoreList.keySet();
+		for (String z : main) {
 			br.append(z);
-		for (String x: ignoreList.get(z)){
-		br.append(" ");	
-		br.append(x);
-		}
-		br.append("\n");
+			for (String x : ignoreList.get(z)) {
+				br.append(" ");
+				br.append(x);
+			}
+			br.append("\n");
 		}
 		br.flush();
 		fos.close();

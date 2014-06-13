@@ -2,6 +2,7 @@ package com.untamedears.civchat;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
@@ -13,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -114,16 +116,23 @@ public class CivChat extends JavaPlugin implements Listener {
             }
         });
         Logger.getLogger(CivChat.class.getName()).log(Level.INFO, (filtered.length) + "", "");
-        if (filtered != null && filtered.length > config.getInt("chat.fileManagement.filesToZip", 15)) {
+        if (filtered != null && filtered.length > config.getInt("chat.fileManagement.filesToZip")) {
+        	byte[] buffer = new byte[1024];
             try {
-                Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Zipping them up", "");
+                Logger.getLogger(CivChat.class.getName()).log(Level.INFO, "Zipping them up");
                 FileOutputStream fos = new FileOutputStream(dir + date + ".zip");
                 ZipOutputStream zos = new ZipOutputStream(fos);
                 for (File file : filtered) {
                     ZipEntry ze = new ZipEntry(file.toString());
                     zos.putNextEntry(ze);
+                    int length;
+                    FileInputStream in = new FileInputStream(file);
+                    while ((length = in.read(buffer)) > 0){
+                    	zos.write(buffer, 0 , length);
+                    }
                     zos.closeEntry();
                     file.delete();
+                    in.close();
                 }
                 zos.close();
             } catch (Exception e) {
