@@ -185,8 +185,6 @@ public class Commands implements CommandExecutor {
                     }
                 }
                 chatManager.sendPrivateMessage(player, receiver, message.toString());
-
-                chatManager.SaveChat(player, "P Message", "To " + receiver.getName() + ": " + message.toString());
                 replyList.put(receiver.getName(), player.getName());
                 return true;
             }
@@ -226,7 +224,6 @@ public class Commands implements CommandExecutor {
 
                     Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "To " + receiver + ": " + message);
                     Bukkit.getPlayer(receiver).sendMessage(ChatColor.LIGHT_PURPLE + "From " + player + ": " + message);
-                    chatManager.SaveChat(Bukkit.getPlayerExact(player), "P Message", "To " + receiver + ": " + message.toString());
                 } else {
                     Bukkit.getPlayer(player).sendMessage(ChatColor.LIGHT_PURPLE + "You will message " + ChatColor.YELLOW + replyList.get(player));
                 }
@@ -336,9 +333,7 @@ public class Commands implements CommandExecutor {
                     message.append(" ");
                 }
             }
-            chatManager.GroupChat(group, message, sender.getName());
-
-            chatManager.SaveChat(player, "GroupChat", group.toString() + " -> " + message.toString());
+            chatManager.GroupChat(group, message.toString(), sender.getName());
             return true;
         }
         return true;

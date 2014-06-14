@@ -71,7 +71,7 @@ public class ChatListener implements Listener {
             }
         }
         if (group != null) {
-            chat.PrivateGroupChat(group, message, player.getName());
+            chat.GroupChat(group, message, player.getName());
             return;
         }
         

@@ -104,6 +104,7 @@ public class ChatManager {
 				+ message);
 		to.sendMessage(ChatColor.LIGHT_PURPLE + "From " + from.getName() + ": "
 				+ message);
+		SaveChat(from, "P Message", "To " + to.getName() + ": " + message.toString());
 	}
 
 	public void sendPlayerBroadcast(Player player, String message,
@@ -257,13 +258,12 @@ public class ChatManager {
 		}
 	}
 
-	public void GroupChat(Faction group, StringBuilder message, String player) {
+	public void GroupChat(Faction group, String message, String player) {
 		Player player1 = Bukkit.getPlayer(player);
 		Collection<Player> players = Citadel.getMemberManager()
 				.getOnlinePlayers();
 		String chat = message.toString();
-		player1.sendMessage(ChatColor.DARK_AQUA + "To group: "
-				+ group.getName() + ": " + chat);
+		player1.sendMessage(ChatColor.GRAY+"["+group.getName()+"] "+player+": "+ChatColor.WHITE+chat);
 		for (Player reciever : players) {
 			if (!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
@@ -277,39 +277,11 @@ public class ChatManager {
 			if (reciever.getName().equals(player1.getName())) {
 				continue;
 			} else {
-				reciever.sendMessage(ChatColor.DARK_AQUA + "Group "
-						+ group.getName() + ", from " + player + ": " + chat);
+				reciever.sendMessage(ChatColor.GRAY+"["+group.getName()+"] "+player+": "+ChatColor.WHITE+chat);
 			}
 
 		}
-
-	}
-
-	public void PrivateGroupChat(Faction group, String message, String player) {
-		Player player1 = Bukkit.getPlayer(player);
-		Collection<Player> players = Citadel.getMemberManager()
-				.getOnlinePlayers();
-		String chat = message;
-		player1.sendMessage(ChatColor.DARK_AQUA + "To group: "
-				+ group.getName() + ": " + chat);
-		for (Player reciever : players) {
-			if (!group.isMember(reciever.getName())
-					&& !group.isFounder(reciever.getName())
-					&& !group.isModerator(reciever.getName())) {
-				continue;
-			}
-
-			if (isIgnoring(reciever.getName(), player) == true) {
-				continue;
-			}
-			if (reciever.getName().equals(player1.getName())) {
-				continue;
-			}
-
-			reciever.sendMessage(ChatColor.DARK_AQUA + "Group "
-					+ group.getName() + ", from " + player + ": " + chat);
-
-		}
+		SaveChat(player1, "GroupChat", group.getName() + " -> " + message);
 	}
 
 	public void addGroupTalk(String player, Faction group) {
