@@ -262,8 +262,7 @@ public class ChatManager {
 		Collection<Player> players = Citadel.getMemberManager()
 				.getOnlinePlayers();
 		String chat = message.toString();
-		player1.sendMessage(ChatColor.DARK_AQUA + "To group: "
-				+ group.getName() + ": " + chat);
+		player1.sendMessage(ChatColor.Gray+"["+group.getName()+"] "+player+": "+ChatColor.White+chat);
 		for (Player reciever : players) {
 			if (!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
@@ -277,8 +276,7 @@ public class ChatManager {
 			if (reciever.getName().equals(player1.getName())) {
 				continue;
 			} else {
-				reciever.sendMessage(ChatColor.DARK_AQUA + "Group "
-						+ group.getName() + ", from " + player + ": " + chat);
+				reciever.sendMessage(ChatColor.Gray+"["+group.getName()+"] "+player+": "+ChatColor.White+chat);
 			}
 
 		}
