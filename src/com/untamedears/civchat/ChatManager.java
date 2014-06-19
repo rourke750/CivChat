@@ -3,6 +3,7 @@ package com.untamedears.civchat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -12,6 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.kitteh.vanish.VanishManager;
+import org.kitteh.vanish.VanishPlugin;
+import org.kitteh.vanish.staticaccess.VanishNoPacket;
 
 import com.untamedears.citadel.Citadel;
 import com.untamedears.citadel.entity.Faction;
@@ -20,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -65,6 +70,7 @@ public class ChatManager {
 	private int shoutHunger;
 	private String shoutColor;
 	private HashMap<String, List<String>> ignoreList = new HashMap<String, List<String>>();
+	private Map<String, List<String>> ignoreGroupList = new HashMap<String, List<String>>();
 
 	public ChatManager(CivChat pluginInstance, FileConfiguration config) {
 		plugin = pluginInstance;
@@ -104,7 +110,8 @@ public class ChatManager {
 				+ message);
 		to.sendMessage(ChatColor.LIGHT_PURPLE + "From " + from.getName() + ": "
 				+ message);
-		SaveChat(from, "P Message", "To " + to.getName() + ": " + message.toString());
+		SaveChat(from, "P Message",
+				"To " + to.getName() + ": " + message.toString());
 	}
 
 	public void sendPlayerBroadcast(Player player, String message,
@@ -260,14 +267,15 @@ public class ChatManager {
 
 	public void GroupChat(Faction group, String message, String player) {
 		Player player1 = Bukkit.getPlayer(player);
-		Collection<Player> players = Citadel.getMemberManager()
-				.getOnlinePlayers();
-		String chat = message.toString();
-		player1.sendMessage(ChatColor.GRAY+"["+group.getName()+"] "+player+": "+ChatColor.WHITE+chat);
+		Player[] players = Bukkit.getOnlinePlayers();
+		String chat = message;
+		player1.sendMessage(ChatColor.GRAY + "[" + group.getName() + "] "
+				+ player + ": " + ChatColor.WHITE + chat);
 		for (Player reciever : players) {
 			if (!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
-					&& !group.isModerator(reciever.getName()) == true) {
+					&& !group.isModerator(reciever.getName())
+					&& ignoreGroupList.get(reciever).contains(group.getName())) {
 				continue;
 			}
 
@@ -277,7 +285,8 @@ public class ChatManager {
 			if (reciever.getName().equals(player1.getName())) {
 				continue;
 			} else {
-				reciever.sendMessage(ChatColor.GRAY+"["+group.getName()+"] "+player+": "+ChatColor.WHITE+chat);
+				reciever.sendMessage(ChatColor.GRAY + "[" + group.getName()
+						+ "] " + player + ": " + ChatColor.WHITE + chat);
 			}
 
 		}
@@ -393,7 +402,6 @@ public class ChatManager {
 			String parts[] = line.split(" ");
 			String owner = parts[0];
 			List<String> participants = new ArrayList<>();
-			;
 			for (int x = 1; x < parts.length; x++) {
 				participants.add(parts[x]);
 			}
@@ -417,5 +425,60 @@ public class ChatManager {
 		}
 		br.flush();
 		fos.close();
+	}
+
+	public void saveGroupIgnore(File file) throws IOException {
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedWriter br = new BufferedWriter(new OutputStreamWriter(fos));
+		Set<String> players = ignoreGroupList.keySet();
+		for (String player : players) {
+			br.append(player);
+			for (String ignored : ignoreGroupList.get(player))
+				br.append(" " + ignored);
+			br.append("\n");
+		}
+		br.flush();
+		br.close();
+	}
+
+	public void loadGroupIgnore(File file) throws FileNotFoundException {
+		FileInputStream fis = new FileInputStream(file);
+		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+		String line;
+		try {
+			while ((line = br.readLine()) != null) {
+				String parts[] = line.split(" ");
+				String owner = parts[0];
+				List<String> participants = new ArrayList<>();
+				for (int x = 1; x < parts.length; x++) {
+					participants.add(parts[x]);
+				}
+				ignoreGroupList.put(owner, participants);
+			}
+			br.close();
+			fis.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean addOrRemoveGroup(String name, String group){
+		List<String> stored = ignoreGroupList.get(name);
+		if (stored == null){
+			List<String> groups = new ArrayList<String>();
+			groups.add(group);
+			ignoreGroupList.put(name, groups);
+			return true;
+		}
+		else if (stored.contains(group)){
+			ignoreGroupList.get(name).remove(group);
+			return false;
+		}
+		else{
+			stored.add(group);
+			ignoreGroupList.put(name, stored);
+			return true;
+		}
 	}
 }
