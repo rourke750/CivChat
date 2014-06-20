@@ -137,7 +137,7 @@ public class Commands implements CommandExecutor {
 							+ "     go to regular chat");
 				} else if (args[0].equalsIgnoreCase("info")) {
 					sender.sendMessage(chatPrefix + ChatColor.WHITE
-							+ " Version 1.1 \n"
+							+ " Version 1.19 \n"
 							+ " Coded by: Rourke750 and ibbignerd");
 				} else if (args[0].equalsIgnoreCase("ignore")) {
 					sender.sendMessage(chatPrefix
@@ -146,7 +146,11 @@ public class Commands implements CommandExecutor {
 							+ " Stop receiving personal messages from player\n"
 							+ " Running /ignore <player> again, will allow personal\n"
 							+ "   messages from player again");
-				} else {
+				} else if (args[0].equalsIgnoreCase("gignore")){
+					sender.sendMessage(ChatColor.WHITE + "/gignore <group>\n"
+							+ "Stop receiving group messages from that group.\n"
+							+ "Running the command again unignores the group.");
+				}else {
 					sender.sendMessage(ChatColor.RED + args[0]
 							+ " is not a valid argument");
 				}
