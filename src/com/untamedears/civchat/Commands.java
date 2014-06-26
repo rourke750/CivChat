@@ -191,7 +191,7 @@ public class Commands implements CommandExecutor {
 		}
 		VanishManager vanish = null;
 		try {
-			if (Bukkit.getPluginManager().getPlugin("vanishnopacket").isEnabled())
+			if (Bukkit.getPluginManager().getPlugin("VanishNoPacket") !=  null)
 				vanish = VanishNoPacket.getManager();
 		} catch (VanishNotLoadedException e) {
 			// TODO Auto-generated catch block
@@ -313,8 +313,6 @@ public class Commands implements CommandExecutor {
 									+ ChatColor.YELLOW + player2);
 					chatManager.removeChannel(player);
 					chatManager.removeGroupTalk(player);
-					sender.sendMessage(ChatColor.RED
-							+ "You have moved to regular chat.");
 					chatManager.addChannel(player, player2);
 				}
 			}
