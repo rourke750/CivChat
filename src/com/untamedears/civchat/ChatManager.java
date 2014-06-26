@@ -272,10 +272,10 @@ public class ChatManager {
 		player1.sendMessage(ChatColor.GRAY + "[" + group.getName() + "] "
 				+ player + ": " + ChatColor.WHITE + chat);
 		for (Player reciever : players) {
-			if (!group.isMember(reciever.getName())
+			if ((!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
-					&& !group.isModerator(reciever.getName())
-					&& (ignoreGroupList == null || ignoreGroupList.get(reciever).contains(group.getName()))) {
+					&& !group.isModerator(reciever.getName()))
+					|| isGroupIgnoring(player, group.getName())) {
 				continue;
 			}
 
@@ -363,6 +363,13 @@ public class ChatManager {
 			return false;
 		}
 
+		return false;
+	}
+	
+	public boolean isGroupIgnoring(String player, String group){
+		if (ignoreGroupList.containsKey(player)){
+			if (ignoreGroupList.get(player).contains(group)) return true;
+		}
 		return false;
 	}
 
