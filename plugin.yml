@@ -1,6 +1,6 @@
 name: CivChat
 main: com.untamedears.civchat.CivChat
-version: 1.23
+version: 1.28
 authors: [Rourke750, ibbignerd]
 softdepend: [vanishnopacket]
 commands:
@@ -32,10 +32,10 @@ commands:
       description: Disallow specified players from pm'ing command sender
       usage: /<command> <player>
       aliases: ig
-   gignore:
-      description: Disallow specified groups from pm'ing a player on a group
-      usage: /<command> <player>
-      aliases: gi
+   gallow:
+      description: Allows specified groups to recieve messages from
+      usage: /<command> <group>
+      aliases: ga
 permissions:
    civchat.admin:
       description: Admin commands for civchat.

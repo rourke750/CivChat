@@ -79,10 +79,10 @@ public class CivChat extends JavaPlugin implements Listener {
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.WARNING, "File Failed" + ex, "");
         }
-        groupFile = new File(dirign+"groupignorelist.txt");
+        groupFile = new File(dirign+"groupallowed.txt");
         try {
         if (groupFile.exists()){
-        	chat.loadGroupIgnore(groupFile);
+        	chat.loadGroupAllowed(groupFile);
         }
         else{
         	groupFile.createNewFile();
@@ -117,7 +117,7 @@ public class CivChat extends JavaPlugin implements Listener {
             writer.flush();
             writer.close();
             chat.save(ignored);
-            chat.saveGroupIgnore(groupFile);
+            chat.saveGroupAllowed(groupFile);
         } catch (IOException ex) {
             Logger.getLogger(CivChat.class.getName()).log(Level.SEVERE, null, ex);
         }

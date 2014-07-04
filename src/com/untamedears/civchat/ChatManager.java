@@ -70,7 +70,7 @@ public class ChatManager {
 	private int shoutHunger;
 	private String shoutColor;
 	private HashMap<String, List<String>> ignoreList = new HashMap<String, List<String>>();
-	private Map<String, List<String>> ignoreGroupList = new HashMap<String, List<String>>();
+	private Map<String, List<String>> allowedGroupList = new HashMap<String, List<String>>();
 
 	public ChatManager(CivChat pluginInstance, FileConfiguration config) {
 		plugin = pluginInstance;
@@ -106,6 +106,8 @@ public class ChatManager {
 					+ " has muted you.");
 			return;
 		}
+		Commands.replyList.put(from.getName(), to.getName());
+		Commands.replyList.put(to.getName(), from.getName());
 		from.sendMessage(ChatColor.LIGHT_PURPLE + "To " + to.getName() + ": "
 				+ message);
 		to.sendMessage(ChatColor.LIGHT_PURPLE + "From " + from.getName() + ": "
@@ -275,7 +277,7 @@ public class ChatManager {
 			if ((!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
 					&& !group.isModerator(reciever.getName()))
-					|| isGroupIgnoring(player, group.getName())) {
+					|| !isGroupAllowed(player, group.getName())) {
 				continue;
 			}
 
@@ -366,10 +368,9 @@ public class ChatManager {
 		return false;
 	}
 	
-	public boolean isGroupIgnoring(String player, String group){
-		if (ignoreGroupList.containsKey(player)){
-			if (ignoreGroupList.get(player).contains(group)) return true;
-		}
+	public boolean isGroupAllowed(String player, String group){
+		if (allowedGroupList.containsKey(player))
+			if (allowedGroupList.get(player).contains(group)) return true;
 		return false;
 	}
 
@@ -434,13 +435,13 @@ public class ChatManager {
 		fos.close();
 	}
 
-	public void saveGroupIgnore(File file) throws IOException {
+	public void saveGroupAllowed(File file) throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
 		BufferedWriter br = new BufferedWriter(new OutputStreamWriter(fos));
-		Set<String> players = ignoreGroupList.keySet();
+		Set<String> players = allowedGroupList.keySet();
 		for (String player : players) {
 			br.append(player);
-			for (String ignored : ignoreGroupList.get(player))
+			for (String ignored : allowedGroupList.get(player))
 				br.append(" " + ignored);
 			br.append("\n");
 		}
@@ -448,7 +449,7 @@ public class ChatManager {
 		br.close();
 	}
 
-	public void loadGroupIgnore(File file) throws FileNotFoundException {
+	public void loadGroupAllowed(File file) throws FileNotFoundException {
 		FileInputStream fis = new FileInputStream(file);
 		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
 		String line;
@@ -460,7 +461,7 @@ public class ChatManager {
 				for (int x = 1; x < parts.length; x++) {
 					participants.add(parts[x]);
 				}
-				ignoreGroupList.put(owner, participants);
+				allowedGroupList.put(owner, participants);
 			}
 			br.close();
 			fis.close();
@@ -471,20 +472,20 @@ public class ChatManager {
 	}
 	
 	public boolean addOrRemoveGroup(String name, String group){
-		List<String> stored = ignoreGroupList.get(name);
+		List<String> stored = allowedGroupList.get(name);
 		if (stored == null){
 			List<String> groups = new ArrayList<String>();
 			groups.add(group);
-			ignoreGroupList.put(name, groups);
+			allowedGroupList.put(name, groups);
 			return true;
 		}
 		else if (stored.contains(group)){
-			ignoreGroupList.get(name).remove(group);
+			allowedGroupList.get(name).remove(group);
 			return false;
 		}
 		else{
 			stored.add(group);
-			ignoreGroupList.put(name, stored);
+			allowedGroupList.put(name, stored);
 			return true;
 		}
 	}

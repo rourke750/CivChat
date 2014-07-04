@@ -27,7 +27,7 @@ public class Commands implements CommandExecutor {
 
 	private CivChat civ;
 	private ChatManager chatManager;
-	private HashMap<String, String> replyList = new HashMap<String, String>();
+	public static HashMap<String, String> replyList = new HashMap<String, String>();
 
 	public Commands(ChatManager chatManagerInstance, CivChat instance) {
 		chatManager = chatManagerInstance;
@@ -60,8 +60,8 @@ public class Commands implements CommandExecutor {
 			return ignore(sender, command, label, args);
 		}
 		
-		if (command.getName().equals("gignore")){
-			return gIgnore(sender, command, label, args);
+		if (command.getName().equals("gallow")){
+			return gAllow(sender, command, label, args);
 		}
 
 		if (command.getName().equals("chat")) {
@@ -79,7 +79,7 @@ public class Commands implements CommandExecutor {
 				if (chatManager.yvar) {
 					help += " /chat height\n";
 				}
-				help += " /chat alias";
+				help += " /chat alias\n /chat ignore\n /chat gallow\n /chat info";
 
 				sender.sendMessage(chatPrefix + " " + ChatColor.WHITE + help);
 			} else if (args.length > 0) {
@@ -137,7 +137,7 @@ public class Commands implements CommandExecutor {
 							+ "     go to regular chat");
 				} else if (args[0].equalsIgnoreCase("info")) {
 					sender.sendMessage(chatPrefix + ChatColor.WHITE
-							+ " Version 1.19 \n"
+							+ " Version 1.28 \n"
 							+ " Coded by: Rourke750 and ibbignerd");
 				} else if (args[0].equalsIgnoreCase("ignore")) {
 					sender.sendMessage(chatPrefix
@@ -146,10 +146,10 @@ public class Commands implements CommandExecutor {
 							+ " Stop receiving personal messages from player\n"
 							+ " Running /ignore <player> again, will allow personal\n"
 							+ "   messages from player again");
-				} else if (args[0].equalsIgnoreCase("gignore")){
-					sender.sendMessage(ChatColor.WHITE + "/gignore <group>\n"
-							+ "Stop receiving group messages from that group.\n"
-							+ "Running the command again unignores the group.");
+				} else if (args[0].equalsIgnoreCase("gallow")){
+					sender.sendMessage(ChatColor.WHITE + "/gallow <group>\n"
+							+ "Start receiving messages from groups.\n"
+							+ "Running the command again ignores the group.");
 				}else {
 					sender.sendMessage(ChatColor.RED + args[0]
 							+ " is not a valid argument");
@@ -160,22 +160,22 @@ public class Commands implements CommandExecutor {
 		return true;
 	}
 	
-	public boolean gIgnore(CommandSender sender, Command command, String label, String[] args){
+	public boolean gAllow(CommandSender sender, Command command, String label, String[] args){
 		if (!(sender instanceof Player)) {
 			sender.sendMessage("You have to be a player to use that command!");
 			return true;
 		}
 		if (args.length == 0) {
-			sender.sendMessage("/gignore <player>");
+			sender.sendMessage("/gallow <group>");
 			return true;
 		}
 		else if (args.length > 0){
-			boolean isGroup = Citadel.getGroupManager().isGroup(args[1]);
+			boolean isGroup = Citadel.getGroupManager().isGroup(args[0]);
 			if (!isGroup){
 				sender.sendMessage(ChatColor.RED + "Group: "+args[0]+" is not a real group!");
 			}
 			else {
-				boolean value = chatManager.addOrRemoveGroup(sender.getName(), args[1]);
+				boolean value = chatManager.addOrRemoveGroup(sender.getName(), args[0]);
 				if (value) sender.sendMessage(ChatColor.RED + "Group: "+args[0] + " was added!");
 				else sender.sendMessage(ChatColor.RED + "Group: "+args[0] + " was removed!");
 			}
@@ -214,13 +214,9 @@ public class Commands implements CommandExecutor {
 		} else if (args.length == 1) {
 			Player receiver = Bukkit
 					.getPlayer(chatManager.playerCheck(args[0]));
-			if (vanish != null && vanish.isVanished(receiver)) {
+			if (receiver == null || (vanish != null && vanish.isVanished(receiver))) {
 				player.sendMessage(ChatColor.RED
 						+ "Error: Player is offline.");
-				return true;
-			}
-			if (receiver == null) {
-				player.sendMessage(ChatColor.RED + "Error: Player is offline.");
 				return true;
 			} else {
 				if (chatManager.getGroupTalk(player.getName()) != null) {
@@ -231,8 +227,6 @@ public class Commands implements CommandExecutor {
 				chatManager.addChannel(player.getName(), receiver.getName());
 				player.sendMessage(ChatColor.RED + "You are now chatting with "
 						+ receiver.getName() + ".");
-				replyList.put(receiver.getName(), player.getName());
-				replyList.put(player.getName(), receiver.getName());
 				return true;
 			}
 		}
@@ -260,8 +254,6 @@ public class Commands implements CommandExecutor {
 				}
 				chatManager.sendPrivateMessage(player, receiver,
 						message.toString());
-				replyList.put(receiver.getName(), player.getName());
-				replyList.put(player.getName(), receiver.getName());
 				return true;
 			}
 		}
@@ -299,13 +291,7 @@ public class Commands implements CommandExecutor {
 							message.append(" ");
 						}
 					}
-
-					Bukkit.getPlayer(player).sendMessage(
-							ChatColor.LIGHT_PURPLE + "To " + receiver + ": "
-									+ message);
-					Bukkit.getPlayer(receiver).sendMessage(
-							ChatColor.LIGHT_PURPLE + "From " + player + ": "
-									+ message);
+					chatManager.sendPrivateMessage(Bukkit.getPlayer(player), Bukkit.getPlayer(receiver), message.toString());
 				} else {
 					String player2 = replyList.get(player);
 					Bukkit.getPlayer(player).sendMessage(
