@@ -277,7 +277,7 @@ public class ChatManager {
 			if ((!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
 					&& !group.isModerator(reciever.getName()))
-					|| !isGroupAllowed(player, group.getName())) {
+					|| !isGroupAllowed(reciever.getName(), group.getName())) {
 				continue;
 			}
 
