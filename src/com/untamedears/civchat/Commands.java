@@ -234,13 +234,9 @@ public class Commands implements CommandExecutor {
 		if (args.length > 1) {
 			Player receiver = Bukkit
 					.getPlayer(chatManager.playerCheck(args[0]));
-			if (vanish != null && vanish.isVanished(receiver)) {
+			if (receiver == null ||(vanish != null && vanish.isVanished(receiver))) {
 				player.sendMessage(ChatColor.RED
 						+ "Error: Player is offline.");
-				return true;
-			}
-			if (receiver == null) {
-				sender.sendMessage(ChatColor.RED + "Error: Player is offline.");
 				return true;
 			} else {
 				StringBuilder message = new StringBuilder();
