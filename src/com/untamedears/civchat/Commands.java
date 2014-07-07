@@ -137,7 +137,7 @@ public class Commands implements CommandExecutor {
 							+ "     go to regular chat");
 				} else if (args[0].equalsIgnoreCase("info")) {
 					sender.sendMessage(chatPrefix + ChatColor.WHITE
-							+ " Version 1.30 \n"
+							+ " Version 1.31 \n"
 							+ " Coded by: Rourke750 and ibbignerd");
 				} else if (args[0].equalsIgnoreCase("ignore")) {
 					sender.sendMessage(chatPrefix
@@ -176,8 +176,8 @@ public class Commands implements CommandExecutor {
 			}
 			else {
 				boolean value = chatManager.addOrRemoveGroup(sender.getName(), args[0]);
-				if (value) sender.sendMessage(ChatColor.RED + "Group: "+args[0] + " was added!");
-				else sender.sendMessage(ChatColor.RED + "Group: "+args[0] + " was removed!");
+				if (value) sender.sendMessage(ChatColor.RED + "Allowing messages from "+args[0] + "!");
+				else sender.sendMessage(ChatColor.RED + "Blocking messages from "+args[0] + "?");
 			}
 		}
 		return true;
@@ -218,7 +218,11 @@ public class Commands implements CommandExecutor {
 				player.sendMessage(ChatColor.RED
 						+ "Error: Player is offline.");
 				return true;
-			} else {
+			} else if(player.getName().equals(receiver.getName())){
+				player.sendMessage(ChatColor.RED + "Error: You cannot send a message to yourself.");
+				return true;
+			}
+			else {
 				if (chatManager.getGroupTalk(player.getName()) != null) {
 					sender.sendMessage(ChatColor.RED
 							+ "You were removed from Group Chat.");
@@ -382,7 +386,7 @@ public class Commands implements CommandExecutor {
 		StringBuilder message = new StringBuilder();
 		Faction group = Citadel.getGroupManager().getGroup(args[0]);
 		if (group == null) {
-			sender.sendMessage(ChatColor.RED + "Not a valid group name");
+			sender.sendMessage(ChatColor.RED + "Error: Not a valid group name.");
 			return true;
 		}
 		if (!Citadel.getGroupManager().getGroup(group.getName())
