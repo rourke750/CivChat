@@ -272,19 +272,19 @@ public class ChatManager {
 		Player[] players = Bukkit.getOnlinePlayers();
 		String chat = message;
 		if (!isGroupAllowed(player, group.getName())){
-			player1.sendMessage(ChatColor.RED + "Error: you need to /gallow this group tp speak or hear from it.");
+			player1.sendMessage(ChatColor.RED + "Error: you need to /gallow this group to speak or hear from it.");
 			return;
 		}
 		player1.sendMessage(ChatColor.GRAY + "[" + group.getName() + "] "
 				+ player + ": " + ChatColor.WHITE + chat);
 		for (Player reciever : players) {
-			if ((!group.isMember(reciever.getName())
+			if (!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
-					&& !group.isModerator(reciever.getName()))
-					|| !isGroupAllowed(reciever.getName(), group.getName())) {
+					&& !group.isModerator(reciever.getName())) {
 				continue;
 			}
-
+			if(!isGroupAllowed(reciever.getName(), group.getName()))
+					continue;
 			if (isIgnoring(reciever.getName(), player)) {
 				continue;
 			}
