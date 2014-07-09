@@ -278,13 +278,12 @@ public class ChatManager {
 		player1.sendMessage(ChatColor.GRAY + "[" + group.getName() + "] "
 				+ player + ": " + ChatColor.WHITE + chat);
 		for (Player reciever : players) {
-			if (!group.isMember(reciever.getName())
+			if ((!group.isMember(reciever.getName())
 					&& !group.isFounder(reciever.getName())
-					&& !group.isModerator(reciever.getName())) {
+					&& !group.isModerator(reciever.getName())) ||
+					!isGroupAllowed(reciever.getName(), group.getName())) {
 				continue;
 			}
-			if(!isGroupAllowed(reciever.getName(), group.getName()))
-					continue;
 			if (isIgnoring(reciever.getName(), player)) {
 				continue;
 			}
@@ -374,7 +373,7 @@ public class ChatManager {
 	
 	public boolean isGroupAllowed(String player, String group){
 		if (allowedGroupList.containsKey(player))
-			if (allowedGroupList.get(player).contains(group)) return true;
+			if (allowedGroupList.get(player).contains(group.toLowerCase())) return true;
 		return false;
 	}
 
@@ -479,16 +478,16 @@ public class ChatManager {
 		List<String> stored = allowedGroupList.get(name);
 		if (stored == null){
 			List<String> groups = new ArrayList<String>();
-			groups.add(group);
+			groups.add(group.toLowerCase());
 			allowedGroupList.put(name, groups);
 			return true;
 		}
 		else if (stored.contains(group)){
-			allowedGroupList.get(name).remove(group);
+			allowedGroupList.get(name).remove(group.toLowerCase());
 			return false;
 		}
 		else{
-			stored.add(group);
+			stored.add(group.toLowerCase());
 			allowedGroupList.put(name, stored);
 			return true;
 		}

@@ -137,7 +137,7 @@ public class Commands implements CommandExecutor {
 							+ "     go to regular chat");
 				} else if (args[0].equalsIgnoreCase("info")) {
 					sender.sendMessage(chatPrefix + ChatColor.WHITE
-							+ " Version 1.32 \n"
+							+ " Version 1.33 \n"
 							+ " Coded by: Rourke750 and ibbignerd");
 				} else if (args[0].equalsIgnoreCase("ignore")) {
 					sender.sendMessage(chatPrefix
@@ -177,7 +177,7 @@ public class Commands implements CommandExecutor {
 			else {
 				boolean value = chatManager.addOrRemoveGroup(sender.getName(), args[0]);
 				if (value) sender.sendMessage(ChatColor.RED + "Allowing messages from "+args[0] + "!");
-				else sender.sendMessage(ChatColor.RED + "Blocking messages from "+args[0] + "?");
+				else sender.sendMessage(ChatColor.RED + "Blocking messages from "+args[0] + "!");
 			}
 		}
 		return true;
