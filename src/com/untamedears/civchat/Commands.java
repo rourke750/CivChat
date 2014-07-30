@@ -390,11 +390,11 @@ public class Commands implements CommandExecutor {
 			return true;
 		}
 		if (!Citadel.getGroupManager().getGroup(group.getName())
-				.isMember(player.getUniqueId())
+				.isMember(sender.getName())
 				&& !Citadel.getGroupManager().getGroup(group.getName())
-						.isModerator(player.getUniqueId())
+						.isModerator(sender.getName())
 				&& !Citadel.getGroupManager().getGroup(group.getName())
-						.isFounder(player.getUniqueId())) {
+						.isFounder(sender.getName())) {
 			sender.sendMessage(ChatColor.RED + "You are not in that group.");
 			return true;
 		}
