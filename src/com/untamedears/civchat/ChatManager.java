@@ -278,9 +278,9 @@ public class ChatManager {
 		player1.sendMessage(ChatColor.GRAY + "[" + group.getName() + "] "
 				+ player + ": " + ChatColor.WHITE + chat);
 		for (Player reciever : players) {
-			if ((!group.isMember(reciever.getName())
-					&& !group.isFounder(reciever.getName())
-					&& !group.isModerator(reciever.getName())) ||
+			if ((!group.isMember(reciever.getUniqueId())
+					&& !group.isFounder(reciever.getUniqueId())
+					&& !group.isModerator(reciever.getUniqueId())) ||
 					!isGroupAllowed(reciever.getName(), group.getName())) {
 				continue;
 			}
@@ -358,7 +358,7 @@ public class ChatManager {
 		try {
 			if (ignoreList.containsKey(muter)) {
 				ignorelist = ignoreList.get(muter);
-				if (ignorelist.contains(muted.toLowerCase())) {
+				if (ignorelist.contains(muted)) {
 					return true;
 				}
 			} else {
@@ -381,10 +381,10 @@ public class ChatManager {
 		List<String> recievers = new ArrayList<String>();
 		if (ignoreList.get(player) != null) {
 			recievers = ignoreList.get(player);
-			recievers.add(reciever.toLowerCase());
+			recievers.add(reciever);
 			ignoreList.put(player, recievers);
 		} else {
-			recievers.add(reciever.toLowerCase());
+			recievers.add(reciever);
 			ignoreList.put(player, recievers);
 		}
 	}
@@ -414,7 +414,7 @@ public class ChatManager {
 			String owner = parts[0];
 			List<String> participants = new ArrayList<>();
 			for (int x = 1; x < parts.length; x++) {
-				participants.add(parts[x].toLowerCase());
+				participants.add(parts[x]);
 			}
 			ignoreList.put(owner, participants);
 		}
@@ -462,7 +462,7 @@ public class ChatManager {
 				String owner = parts[0];
 				List<String> participants = new ArrayList<>();
 				for (int x = 1; x < parts.length; x++) {
-					participants.add(parts[x].toLowerCase());
+					participants.add(parts[x]);
 				}
 				allowedGroupList.put(owner, participants);
 			}
