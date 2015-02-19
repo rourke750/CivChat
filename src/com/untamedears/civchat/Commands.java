@@ -173,7 +173,7 @@ public class Commands implements CommandExecutor {
 				sender.sendMessage(ChatColor.RED + "Group: "+args[0]+" is not a real group!");
 			}
 			else if (!(group.isFounder(uuid) || group.isMember(uuid) || group.isModerator(uuid))){
-				sender.sendMessage(ChatColor.RED + "You cannot join that group you are not on it.");
+				sender.sendMessage(ChatColor.RED + "You cannot join that group; you are not on it.");
 			}
 			else {
 				boolean value = chatManager.addOrRemoveGroup(sender.getName(), args[0]);
